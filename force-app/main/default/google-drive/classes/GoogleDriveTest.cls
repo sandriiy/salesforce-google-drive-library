@@ -17,7 +17,11 @@ private class GoogleDriveTest {
         buildGoogleDriveInfo();
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-        GDriveSearchResult result = testGoogleDrive.drives().search(50, '', false);
+        GDriveSearchResult result = testGoogleDrive.drives().search()
+            .setMaxResult(50)
+            .setSearchQuery('')
+            .setDomainAdminAccess(false)
+            .execute();
         Assert.areEqual(2, result.drives.size());
         Test.stopTest();
     }
@@ -36,16 +40,109 @@ private class GoogleDriveTest {
         buildGoogleDriveInfo();
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-        GDriveSearchResult result = testGoogleDrive.drives().search('4mzkteXuXufI6lXV');
+        GDriveSearchResult result = testGoogleDrive.drives().search('4mzkteXuXufI6lXV4mzkteXuXufI6lXV')
+            .execute();
         Assert.areEqual('2fd620046218c04c12709a67c4879de9', result.nextPageToken);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testDriveSearchFail() {
+        String failedDriveSearchBody = '{"error": {"errors": [{"domain": "global","reason": "authError","message": "Invalid Credentials","locationType": "header","location": "Authorization"}],"code": 401,"message": "Invalid Credentials"}}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.SEARCH_DRIVES_ENDPOINT,
+            GoogleConstants.HTTP_UNAUTHORIZED_STATUS_CODE,
+            failedDriveSearchBody,
+            new Map<String, String>()
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        try {
+            GDriveSearchResult result = testGoogleDrive.drives().search().execute();
+        } catch (CalloutException ex) {
+            Assert.areEqual(failedDriveSearchBody, ex.getMessage());
+        }
+
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testNextPageFileSearch() {
+        String nextPageFileSearchBody = '{"nextPageToken": "~!!~AI9FV7ThOnDGgvVJDf_o4en1NZxTE_2tX-FVRhM-0UKO3MxOQh-dMLY4EiA==","kind": "drive#fileList","incompleteSearch": true,"files": [{"kind": "drive#file","mimeType": "application/vnd.google-apps.folder","id": "1dmEbuynf_W6064Acrx8RrpqU4EL60mRs","name": "Test"},{"kind": "drive#file","mimeType": "application/vnd.google-apps.folder","id": "1porUCOPDqUHXji8jCRqfG4cjj1gmJTVL","name": "audio"},{"kind": "drive#file","mimeType": "video/quicktime","id": "1ZqgilKNUpNIwvAotA5ss7Wc6swBmApkD","name": "Test.MOV"}]}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.SEARCH_FILES_ENDPOINT,
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            nextPageFileSearchBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GFileSearchResult result = testGoogleDrive.files().search('~!!~BI9FV7ThOnDGgvVJDf_o4en1NZxEOJxjGmloO1QwivWraJd4UKiAAiFaEyV==')
+            .setDriveId('1QwraJd4UKiAAiFaEyV2worNpYLnbZd4')
+            .setOrderBy('name')
+            .execute();
+        Assert.areEqual('~!!~AI9FV7ThOnDGgvVJDf_o4en1NZxTE_2tX-FVRhM-0UKO3MxOQh-dMLY4EiA==', result.nextPageToken);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testFullFileSearch() {
+        String fullFileSearchBody = '{"kind": "drive#fileList","incompleteSearch": false,"files": [{"kind": "drive#file","mimeType": "application/vnd.google-apps.folder","id": "1dmEbuynf_W6064Acrx8RrpqU4EL60mRs","name": "Test"},{"kind": "drive#file","mimeType": "application/vnd.google-apps.folder","id": "1porUCOPDqUHXji8jCRqfG4cjj1gmJTVL","name": "audio"},{"kind": "drive#file","mimeType": "video/quicktime","id": "1ZqgilKNUpNIwvAotA5ss7Wc6swBmApkD","name": "Test.MOV"}]}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.SEARCH_FILES_ENDPOINT,
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            fullFileSearchBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GFileSearchResult result = testGoogleDrive.files().search()
+            .setMaxResult(3)
+            .setSearchQuery('trashed = false')
+            .setSearchOnAllDrives(true)
+            .setOrderBy('folder,modifiedTime desc,name')
+            .execute();
+        Assert.areEqual(3, result.files.size());
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testFileSearchFail() {
+        String failedFileSearchBody = '{"error": {"errors": [{"domain": "global","reason": "authError","message": "Invalid Credentials","locationType": "header","location": "Authorization"}],"code": 401,"message": "Invalid Credentials"}}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.SEARCH_FILES_ENDPOINT,
+            GoogleConstants.HTTP_UNAUTHORIZED_STATUS_CODE,
+            failedFileSearchBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        try {
+            GFileSearchResult result = testGoogleDrive.files().search().execute();
+        } catch (CalloutException ex) {
+            Assert.areEqual(failedFileSearchBody, ex.getMessage());
+        }
+
         Test.stopTest();
     }
 
     private static void buildGoogleDriveInfo() {
         userAgentName = 'Google Drive/v3 test';
         testCredentials = new GoogleCredential();
-        testCredentials.accessToken = 'aZ3X8kP2Rt';
-        testCredentials.refreshToken = '5DgH2pM7qZ';
+        testCredentials.accessToken = 'aZ3X8kP2RtaZ3X8kP2RtaZ3X8kP2RtaZ';
         testCredentials.tokenType = 'Bearer'; 
     }
 }

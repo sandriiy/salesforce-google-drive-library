@@ -4,7 +4,6 @@ public without sharing class GoogleDrive {
 
     private DriveList driveStream;
     private FileList fileStream;
-    private FolderList folderStream;
 
     public GoogleDrive(GoogleCredential credentials, String applicationName) {
         this.credentials = credentials;
@@ -12,7 +11,6 @@ public without sharing class GoogleDrive {
 
         this.driveStream = new DriveList(this);
         this.fileStream = new FileList(this);
-        this.folderStream = new FolderList(this);
     }
 
     public DriveList drives() {
@@ -23,10 +21,6 @@ public without sharing class GoogleDrive {
         return fileStream;
     }
 
-    public FolderList folders() {
-        return folderStream;
-    }
-
 
     public class DriveList {
         private GoogleDrive googleDriveInstance;
@@ -34,27 +28,85 @@ public without sharing class GoogleDrive {
             this.googleDriveInstance = googleDriveInstance;
         }
 
-        public GDriveSearchResult search(Integer maxResult, String searchQuery, Boolean isDomainAdminAccess) {
-            HTTPResponse searchResponse = new GoogleDrive.GoogleRequestBuilder(this.googleDriveInstance)
-                .setEndpoint(GoogleConstants.SEARCH_DRIVES_ENDPOINT)
-                .setMethod('GET')
-                .setHeader('User-Agent', this.googleDriveInstance.userAgentName)
-                .setParameter('pageSize', maxResult)
-                .setParameter('q', searchQuery)
-                .setParameter('useDomainAdminAccess', isDomainAdminAccess)
-                .send();
-
-            return this.retrieveRequestSearchWrapper(searchResponse);
+        public DriveSearchBuilder search() {
+            return new DriveSearchBuilder(
+                googleDriveInstance, 
+                GoogleConstants.SEARCH_DRIVES_ENDPOINT, 
+                'GET'
+            );
         }
 
-        public GDriveSearchResult search(String nextPageToken) {
-            HTTPResponse searchResponse = new GoogleDrive.GoogleRequestBuilder(this.googleDriveInstance)
-                .setEndpoint(GoogleConstants.SEARCH_DRIVES_ENDPOINT)
-                .setMethod('GET')
-                .setHeader('User-Agent', this.googleDriveInstance.userAgentName)
-                .setParameter('pageToken', nextPageToken)
-                .send();
+        public DriveSearchBuilder search(String nextPageToken) {
+            DriveSearchBuilder searchBuilder = new DriveSearchBuilder(
+                googleDriveInstance, 
+                GoogleConstants.SEARCH_DRIVES_ENDPOINT, 
+                'GET'
+            );
 
+            searchBuilder.setNextPageToken(nextPageToken);
+            return searchBuilder;
+        }
+    }
+
+    public class FileList {
+        private GoogleDrive googleDriveInstance;
+        public FileList(GoogleDrive googleDriveInstance) {
+            this.googleDriveInstance = googleDriveInstance;
+        }
+
+        public FileSearchBuilder search() {
+            return new FileSearchBuilder(
+                googleDriveInstance, 
+                GoogleConstants.SEARCH_FILES_ENDPOINT, 
+                'GET'
+            );
+        }
+
+        public FileSearchBuilder search(String nextPageToken) {
+            FileSearchBuilder searchBuilder = new FileSearchBuilder(
+                googleDriveInstance, 
+                GoogleConstants.SEARCH_FILES_ENDPOINT, 
+                'GET'
+            );
+
+            searchBuilder.setNextPageToken(nextPageToken);
+            return searchBuilder;
+        }
+    }
+
+    public class DriveSearchBuilder {
+        private GoogleRequestBuilder requestGoogleBuilder;
+
+        public DriveSearchBuilder(GoogleDrive googleDriveInstance, String endpoint, String method) {
+            this.requestGoogleBuilder = new GoogleDrive.GoogleRequestBuilder(googleDriveInstance);
+            this.requestGoogleBuilder.setEndpoint(endpoint);
+            this.requestGoogleBuilder.setMethod(method);
+            this.requestGoogleBuilder.setHeader('User-Agent', googleDriveInstance.userAgentName);
+            this.requestGoogleBuilder.setParameter('pageSize', GoogleConstants.SEARCH_DEFAULT_PAGE_SIZE);
+        }
+
+        public DriveSearchBuilder setMaxResult(Integer maxResult) {
+            this.requestGoogleBuilder.setParameter('pageSize', maxResult);
+            return this;
+        }
+
+        public DriveSearchBuilder setSearchQuery(String query) {
+            this.requestGoogleBuilder.setParameter('q', query);
+            return this;
+        }
+
+        public DriveSearchBuilder setDomainAdminAccess(Boolean isDomainAdminAccess) {
+            this.requestGoogleBuilder.setParameter('useDomainAdminAccess', isDomainAdminAccess);
+            return this;
+        }
+
+        public DriveSearchBuilder setNextPageToken(String pageToken) {
+            this.requestGoogleBuilder.setParameter('pageToken', pageToken);
+            return this;
+        }
+
+        public GDriveSearchResult execute() {
+            HTTPResponse searchResponse = this.requestGoogleBuilder.send();
             return this.retrieveRequestSearchWrapper(searchResponse);
         }
 
@@ -67,17 +119,59 @@ public without sharing class GoogleDrive {
         }
     }
 
-    public class FileList {
-        private GoogleDrive googleDriveInstance;
-        public FileList(GoogleDrive googleDriveInstance) {
-            this.googleDriveInstance = googleDriveInstance;
-        }
-    }
+    public class FileSearchBuilder {
+        private GoogleRequestBuilder requestGoogleBuilder;
 
-    public class FolderList {
-        private GoogleDrive googleDriveInstance;
-        public FolderList(GoogleDrive googleDriveInstance) {
-            this.googleDriveInstance = googleDriveInstance;
+        public FileSearchBuilder(GoogleDrive googleDriveInstance, String endpoint, String method) {
+            this.requestGoogleBuilder = new GoogleDrive.GoogleRequestBuilder(googleDriveInstance);
+            this.requestGoogleBuilder.setEndpoint(endpoint);
+            this.requestGoogleBuilder.setMethod(method);
+            this.requestGoogleBuilder.setHeader('User-Agent', googleDriveInstance.userAgentName);
+            this.requestGoogleBuilder.setParameter('pageSize', GoogleConstants.SEARCH_DEFAULT_PAGE_SIZE);
+        }
+
+        public FileSearchBuilder setMaxResult(Integer maxResult) {
+            this.requestGoogleBuilder.setParameter('pageSize', maxResult);
+            return this;
+        }
+
+        public FileSearchBuilder setSearchQuery(String query) {
+            this.requestGoogleBuilder.setParameter('q', query);
+            return this;
+        }
+
+        public FileSearchBuilder setNextPageToken(String pageToken) {
+            this.requestGoogleBuilder.setParameter('pageToken', pageToken);
+            return this;
+        }
+
+        public FileSearchBuilder setOrderBy(String orderBy) {
+            this.requestGoogleBuilder.setParameter('orderBy', orderBy);
+            return this;
+        }
+
+        public FileSearchBuilder setDriveId(String driveId) {
+            this.requestGoogleBuilder.setParameter('driveId', driveId);
+            return this;
+        }
+
+        public FileSearchBuilder setSearchOnAllDrives(Boolean includeAllDrives) {
+            this.requestGoogleBuilder.setParameter('supportsAllDrives', includeAllDrives);
+            this.requestGoogleBuilder.setParameter('includeItemsFromAllDrives', includeAllDrives);
+            return this;
+        }
+
+        public GFileSearchResult execute() {
+            HTTPResponse searchResponse = this.requestGoogleBuilder.send();
+            return this.retrieveRequestSearchWrapper(searchResponse);
+        }
+
+        private GFileSearchResult retrieveRequestSearchWrapper(HTTPResponse searchResponse) {
+            if (searchResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
+                return (GFileSearchResult) JSON.deserialize(searchResponse.getBody(), GFileSearchResult.class);
+            } else {
+                throw new CalloutException(searchResponse.getBody());
+            }
         }
     }
 
@@ -146,7 +240,7 @@ public without sharing class GoogleDrive {
             this.buildEndpointBody(req);
 
             Http http = new Http();
-            return http.send(req); // NEED TO CHECK IF REFRESH TOKEN IS THERE, IF SO - TRY TO REFRESH ACCESS TOKEN
+            return http.send(req);
         }
 
         private void buildEndpointUrl(HttpRequest req) {

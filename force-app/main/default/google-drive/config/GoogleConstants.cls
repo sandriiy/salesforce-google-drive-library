@@ -4,4 +4,6 @@ public class GoogleConstants {
 
     public static final Integer HTTP_SUCCESS_STATUS_CODE = 200;
     public static final Integer HTTP_UNAUTHORIZED_STATUS_CODE = 401;
+
+    public static final Integer SEARCH_DEFAULT_PAGE_SIZE = 100;
 }

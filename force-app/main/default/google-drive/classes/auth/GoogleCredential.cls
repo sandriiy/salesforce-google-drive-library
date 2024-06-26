@@ -3,6 +3,4 @@ public class GoogleCredential {
     public String accessToken;
     @AuraEnabled
     public String tokenType;
-    @AuraEnabled
-    public String refreshToken;
 }

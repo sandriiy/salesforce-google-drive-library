@@ -17,7 +17,7 @@ private class GoogleDriveTest {
         buildGoogleDriveInfo();
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-        GDriveSearchResult result = testGoogleDrive.drives().search()
+        GoogleDriveSearchResult result = testGoogleDrive.drives().search()
             .setMaxResult(50)
             .setSearchQuery('')
             .setDomainAdminAccess(false)
@@ -40,7 +40,7 @@ private class GoogleDriveTest {
         buildGoogleDriveInfo();
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-        GDriveSearchResult result = testGoogleDrive.drives().search('4mzkteXuXufI6lXV4mzkteXuXufI6lXV')
+        GoogleDriveSearchResult result = testGoogleDrive.drives().search('4mzkteXuXufI6lXV4mzkteXuXufI6lXV')
             .execute();
         Assert.areEqual('2fd620046218c04c12709a67c4879de9', result.nextPageToken);
         Test.stopTest();
@@ -62,7 +62,7 @@ private class GoogleDriveTest {
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
         try {
-            GDriveSearchResult result = testGoogleDrive.drives().search().execute();
+            GoogleDriveSearchResult result = testGoogleDrive.drives().search().execute();
         } catch (CalloutException ex) {
             Assert.areEqual(failedDriveSearchBody, ex.getMessage());
         }
@@ -84,7 +84,7 @@ private class GoogleDriveTest {
         buildGoogleDriveInfo();
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-        GFileSearchResult result = testGoogleDrive.files().search('~!!~BI9FV7ThOnDGgvVJDf_o4en1NZxEOJxjGmloO1QwivWraJd4UKiAAiFaEyV==')
+        GoogleFileSearchResult result = testGoogleDrive.files().search('~!!~BI9FV7ThOnDGgvVJDf_o4en1NZxEOJxjGmloO1QwivWraJd4UKiAAiFaEyV==')
             .setDriveId('1QwraJd4UKiAAiFaEyV2worNpYLnbZd4')
             .setOrderBy('name')
             .execute();
@@ -106,7 +106,7 @@ private class GoogleDriveTest {
         buildGoogleDriveInfo();
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-        GFileSearchResult result = testGoogleDrive.files().search()
+        GoogleFileSearchResult result = testGoogleDrive.files().search()
             .setMaxResult(3)
             .setSearchQuery('trashed = false')
             .setSearchOnAllDrives(true)
@@ -131,11 +131,102 @@ private class GoogleDriveTest {
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
         try {
-            GFileSearchResult result = testGoogleDrive.files().search().execute();
+            GoogleFileSearchResult result = testGoogleDrive.files().search().execute();
         } catch (CalloutException ex) {
             Assert.areEqual(failedFileSearchBody, ex.getMessage());
         }
 
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testSimpleFileUpload() {
+        String successSimpleFileUpload = '{"id": "1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9","name": "My Document","driveId": "0BwwA4oUTeiV1UVNwOHItT0xfa0U","fileExtension": "docx","copyRequiresWriterPermission": false,"md5Checksum": "d41d8cd98f00b204e9800998ecf8427e","writersCanShare": true,"viewedByMe": true,"mimeType": "application/vnd.google-apps.document","exportLinks": {"application/pdf": "https://drive.google.com/uc?id=1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9&export=pdf"},"parents": ["0BwwA4oUTeiV1NHRlWE56R2EwOEU"],"thumbnailLink": "https://drive.google.com/thumbnail?id=1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9","iconLink": "https://drive.google.com/icon?id=1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9","shared": false,"lastModifyingUser": {"displayName": "John Doe","kind": "drive#user","me": true,"permissionId": "123456789","emailAddress": "johndoe@example.com","photoLink": "https://example.com/photo.jpg"},"owners": [{"displayName": "John Doe","kind": "drive#user","me": true,"permissionId": "123456789","emailAddress": "johndoe@example.com","photoLink": "https://example.com/photo.jpg"}],"headRevisionId": "0123456789","sharingUser": {"displayName": "Jane Doe","kind": "drive#user","me": false,"permissionId": "987654321","emailAddress": "janedoe@example.com","photoLink": "https://example.com/photo2.jpg"},"webViewLink": "https://drive.google.com/file/d/1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9/view","webContentLink": "https://drive.google.com/uc?id=1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9&export=download","size": "102400","viewersCanCopyContent": true,"permissions": [{"id": "1234567890","displayName": "Jane Doe","type": "user","kind": "drive#permission","permissionDetails": [],"photoLink": "https://example.com/photo2.jpg","emailAddress": "janedoe@example.com","role": "reader","allowFileDiscovery": false,"domain": "","expirationTime": "","teamDrivePermissionDetails": [],"deleted": false,"view": "","pendingOwner": false}],"hasThumbnail": true,"spaces": ["drive"],"folderColorRgb": "#FF0000","description": "A sample document","starred": false,"trashed": false,"explicitlyTrashed": false,"createdTime": "2024-06-29T12:00:00.000Z","modifiedTime": "2024-06-29T12:30:00.000Z","modifiedByMeTime": "2024-06-29T12:15:00.000Z","viewedByMeTime": "2024-06-29T12:20:00.000Z","sharedWithMeTime": "2024-06-29T12:10:00.000Z","quotaBytesUsed": "102400","version": "1","originalFilename": "my_document.docx","ownedByMe": true,"fullFileExtension": "docx","properties": {"key1": "value1"},"appProperties": {"key2": "value2"},"isAppAuthorized": true,"teamDriveId": "0BwwA4oUTeiV1UVNwOHItT0xfa0U","capabilities": {"canEdit": true,"canComment": true,"canShare": true},"hasAugmentedPermissions": false,"trashingUser": {"displayName": "John Doe","kind": "drive#user","me": true,"permissionId": "123456789","emailAddress": "johndoe@example.com","photoLink": "https://example.com/photo.jpg"},"thumbnailVersion": "1","trashedTime": "","modifiedByMe": true,"permissionIds": ["1234567890"],"imageMediaMetadata": {"width": 800,"height": 600},"videoMediaMetadata": {"width": 1920,"height": 1080,"durationMillis": "120000"},"shortcutDetails": {"targetId": "0BwwA4oUTeiV1UVNwOHItT0xfa0U","targetMimeType": "application/vnd.google-apps.folder","targetResourceKey": "resourceKey123"},"resourceKey": "resourceKey123","linkShareMetadata": {"securityUpdateEligible": true,"securityUpdateEnabled": true},"sha1Checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709","sha256Checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.UPLOAD_FILES_ENDPOINT,
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            successSimpleFileUpload
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().simpleCreate()
+            .setContentType('text/plain')
+            .setContentLength(11)
+            .setFields('id, name, driveId, fileExtension, copyRequiresWriterPermission, md5Checksum, writersCanShare, viewedByMe, mimeType, exportLinks, parents, thumbnailLink, iconLink, shared, lastModifyingUser, owners, headRevisionId, sharingUser, webViewLink, webContentLink, size, viewersCanCopyContent, permissions, hasThumbnail, spaces, folderColorRgb, description, starred, trashed, explicitlyTrashed, createdTime, modifiedTime, modifiedByMeTime, viewedByMeTime, sharedWithMeTime, quotaBytesUsed, version, originalFilename, ownedByMe, fullFileExtension, properties, appProperties, isAppAuthorized, teamDriveId, capabilities, hasAugmentedPermissions, trashingUser, thumbnailVersion, trashedTime, modifiedByMe, permissionIds, imageMediaMetadata, videoMediaMetadata, shortcutDetails, resourceKey, linkShareMetadata, sha1Checksum, sha256Checksum')
+            .setContentBody('Hello World')
+            .execute();
+
+        // Fields that are specified in "setFields()" will be received 
+        // in response to the creation of the document, 
+        // validation is performed only for some of them, 
+        // so as not to clutter the test class.
+        Assert.isNotNull(result.id);
+        Assert.isNotNull(result.name);
+        Assert.isNotNull(result.driveId);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testMultipartFileUpload() {
+        String successMultipartFileUpload = '{"id": "1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9","name": "My Document","driveId": "0BwwA4oUTeiV1UVNwOHItT0xfa0U","fileExtension": "docx","copyRequiresWriterPermission": false,"md5Checksum": "d41d8cd98f00b204e9800998ecf8427e","writersCanShare": true,"viewedByMe": true,"mimeType": "application/vnd.google-apps.document","exportLinks": {"application/pdf": "https://drive.google.com/uc?id=1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9&export=pdf"},"parents": ["0BwwA4oUTeiV1NHRlWE56R2EwOEU"],"thumbnailLink": "https://drive.google.com/thumbnail?id=1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9","iconLink": "https://drive.google.com/icon?id=1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9","shared": false,"lastModifyingUser": {"displayName": "John Doe","kind": "drive#user","me": true,"permissionId": "123456789","emailAddress": "johndoe@example.com","photoLink": "https://example.com/photo.jpg"},"owners": [{"displayName": "John Doe","kind": "drive#user","me": true,"permissionId": "123456789","emailAddress": "johndoe@example.com","photoLink": "https://example.com/photo.jpg"}],"headRevisionId": "0123456789","sharingUser": {"displayName": "Jane Doe","kind": "drive#user","me": false,"permissionId": "987654321","emailAddress": "janedoe@example.com","photoLink": "https://example.com/photo2.jpg"},"webViewLink": "https://drive.google.com/file/d/1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9/view","webContentLink": "https://drive.google.com/uc?id=1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9&export=download","size": "102400","viewersCanCopyContent": true,"permissions": [{"id": "1234567890","displayName": "Jane Doe","type": "user","kind": "drive#permission","permissionDetails": [],"photoLink": "https://example.com/photo2.jpg","emailAddress": "janedoe@example.com","role": "reader","allowFileDiscovery": false,"domain": "","expirationTime": "","teamDrivePermissionDetails": [],"deleted": false,"view": "","pendingOwner": false}],"hasThumbnail": true,"spaces": ["drive"],"folderColorRgb": "#FF0000","description": "A sample document","starred": false,"trashed": false,"explicitlyTrashed": false,"createdTime": "2024-06-29T12:00:00.000Z","modifiedTime": "2024-06-29T12:30:00.000Z","modifiedByMeTime": "2024-06-29T12:15:00.000Z","viewedByMeTime": "2024-06-29T12:20:00.000Z","sharedWithMeTime": "2024-06-29T12:10:00.000Z","quotaBytesUsed": "102400","version": "1","originalFilename": "my_document.docx","ownedByMe": true,"fullFileExtension": "docx","properties": {"key1": "value1"},"appProperties": {"key2": "value2"},"isAppAuthorized": true,"teamDriveId": "0BwwA4oUTeiV1UVNwOHItT0xfa0U","capabilities": {"canEdit": true,"canComment": true,"canShare": true},"hasAugmentedPermissions": false,"trashingUser": {"displayName": "John Doe","kind": "drive#user","me": true,"permissionId": "123456789","emailAddress": "johndoe@example.com","photoLink": "https://example.com/photo.jpg"},"thumbnailVersion": "1","trashedTime": "","modifiedByMe": true,"permissionIds": ["1234567890"],"imageMediaMetadata": {"width": 800,"height": 600},"videoMediaMetadata": {"width": 1920,"height": 1080,"durationMillis": "120000"},"shortcutDetails": {"targetId": "0BwwA4oUTeiV1UVNwOHItT0xfa0U","targetMimeType": "application/vnd.google-apps.folder","targetResourceKey": "resourceKey123"},"resourceKey": "resourceKey123","linkShareMetadata": {"securityUpdateEligible": true,"securityUpdateEnabled": true},"sha1Checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709","sha256Checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.UPLOAD_FILES_ENDPOINT,
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            successMultipartFileUpload
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().multipartCreate()
+            .setContentLength(11)
+            .setFields('id, name, driveId, fileExtension, copyRequiresWriterPermission, md5Checksum, writersCanShare, viewedByMe, mimeType, exportLinks, parents, thumbnailLink, iconLink, shared, lastModifyingUser, owners, headRevisionId, sharingUser, webViewLink, webContentLink, size, viewersCanCopyContent, permissions, hasThumbnail, spaces, folderColorRgb, description, starred, trashed, explicitlyTrashed, createdTime, modifiedTime, modifiedByMeTime, viewedByMeTime, sharedWithMeTime, quotaBytesUsed, version, originalFilename, ownedByMe, fullFileExtension, properties, appProperties, isAppAuthorized, teamDriveId, capabilities, hasAugmentedPermissions, trashingUser, thumbnailVersion, trashedTime, modifiedByMe, permissionIds, imageMediaMetadata, videoMediaMetadata, shortcutDetails, resourceKey, linkShareMetadata, sha1Checksum, sha256Checksum')
+            .setFileName('Multipart Upload')
+            .setMimeType('application/vnd.google-apps.document')
+            .setParentFolders(new List<String>{'1TLCWgrczvSFnnJpU-6OEEEXMy77OVLjM', '1TLDWgrczvSFnnJpU-2OEEEXMy77OVLjM'})
+            .setBody('text/plain', 'base64', 'Hello World')
+            .execute();
+
+        // Fields that are specified in "setFields()" will be received 
+        // in response to the creation of the document, 
+        // validation is performed only for some of them, 
+        // so as not to clutter the test class.
+        Assert.isNotNull(result.id);
+        Assert.isNotNull(result.name);
+        Assert.isNotNull(result.driveId);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testMultipartFileUploadFail() {
+        String failedMultipartFileUpload = '{"error": {"errors": [{"domain": "global","reason": "authError","message": "Invalid Credentials","locationType": "header","location": "Authorization"}],"code": 401,"message": "Invalid Credentials"}}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.UPLOAD_FILES_ENDPOINT,
+            GoogleConstants.HTTP_UNAUTHORIZED_STATUS_CODE,
+            failedMultipartFileUpload
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        try {
+            GoogleFileEntity result = testGoogleDrive.files().multipartCreate()
+                .setContentLength('11')
+                .setFields('id, name')
+                .setFileName('Multipart Failed Upload')
+                .setBody('Hello World')
+                .execute();
+        } catch (CalloutException ex) {
+            Assert.areEqual(failedMultipartFileUpload, ex.getMessage());
+        }
         Test.stopTest();
     }
 

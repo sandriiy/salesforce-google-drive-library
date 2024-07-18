@@ -1,4 +1,4 @@
-public class GoogleSimpleFileBuilder {
+public class GoogleSimpleFileBuilder implements GoogleFileCreator {
     private GoogleRequestBuilder requestGoogleBuilder;
 
     public GoogleSimpleFileBuilder(GoogleDrive googleDriveInstance, String endpoint, String method) {
@@ -35,15 +35,15 @@ public class GoogleSimpleFileBuilder {
     }
 
     public GoogleFileEntity execute() {
-        HTTPResponse searchResponse = this.requestGoogleBuilder.send();
-        return this.retrieveRequestUploadWrapper(searchResponse);
+        HTTPResponse uploadResponse = this.requestGoogleBuilder.send();
+        return this.retrieveRequestUploadWrapper(uploadResponse);
     }
 
-    private GoogleFileEntity retrieveRequestUploadWrapper(HTTPResponse searchResponse) {
-        if (searchResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
-            return (GoogleFileEntity) JSON.deserialize(searchResponse.getBody(), GoogleFileEntity.class);
+    private GoogleFileEntity retrieveRequestUploadWrapper(HTTPResponse uploadResponse) {
+        if (uploadResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
+            return (GoogleFileEntity) JSON.deserialize(uploadResponse.getBody(), GoogleFileEntity.class);
         } else {
-            throw new CalloutException(searchResponse.getBody());
+            throw new CalloutException(uploadResponse.getBody());
         }
     }
 }

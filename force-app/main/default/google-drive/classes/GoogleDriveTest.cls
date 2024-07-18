@@ -230,6 +230,66 @@ private class GoogleDriveTest {
         Test.stopTest();
     }
 
+    @isTest
+    private static void testClone() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String successFileCloned = '{"kind": "drive#file","id": "1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw","name": "CopiedDocument"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.CLONE_FILE_ENDPOINT, testFileId),
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            successFileCloned
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().clone(testFileId)
+            .setFields('id, name')
+            .setFileName('CopiedDocument')
+            .setMimeType('application/vnd.google-apps.document')
+            .setParentFolders(new List<String>{'1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw'})
+            .execute();
+
+        // Fields that are specified in "setFields()" will be received 
+        // in response to the cloning of the document
+        Assert.isNotNull(result.id);
+        Assert.isNotNull(result.name);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testPermissionFileCreate() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String successFilePermissionCreated = '{"kind": "drive#permission","id": "1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw","type": "user","emailAddress": "test@gmail.com","role": "reader","domain": "","allowFileDiscovery": false,"displayName": "Example User"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.NEW_PERMISSION_FILE_ENDPOINT, testFileId),
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            successFilePermissionCreated
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GooglePermissionEntity result = testGoogleDrive.files().permission().create(testFileId)
+            .setSendNotificationEmail(true)
+            .setTransferOwnership(false)
+            .setPrincipalType('user')
+            .setPrincipalRole('reader')
+            .setPrincipalEmailAddress('test@gmail.com')
+            .execute();
+
+        Assert.isNotNull(result.id);
+        Test.stopTest();
+    }
+
+    private static String buildFileDependentEndpoint(String baseEndpoint, String fileId) {
+        return String.format(baseEndpoint, new List<String>{fileId});
+    }
+
     private static void buildGoogleDriveInfo() {
         userAgentName = 'Google Drive/v3 test';
         testCredentials = new GoogleCredential();

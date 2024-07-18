@@ -88,5 +88,18 @@ public without sharing class GoogleDrive {
                 'POST'
             );
         }
+
+        public GoogleCloneFileBuilder clone(String fileId) {
+            return new GoogleCloneFileBuilder(
+                googleDriveInstance,
+                fileId,
+                GoogleConstants.CLONE_FILE_ENDPOINT,
+                'POST'
+            );
+        }
+
+        public GooglePermissionFileFactory permission() {
+            return new GooglePermissionFileFactory(googleDriveInstance);
+        }
     }
 }

@@ -67,10 +67,10 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
         this.requestGoogleBuilder.setBody(this.buildMultipartRequestBody());
 
         HTTPResponse uploadResponse = this.requestGoogleBuilder.send();
-        return this.retrieveRequestUploadWrapper(uploadResponse);
+        return this.retrieveRequestCreateWrapper(uploadResponse);
     }
 
-    private GoogleFileEntity retrieveRequestUploadWrapper(HTTPResponse uploadResponse) {
+    private GoogleFileEntity retrieveRequestCreateWrapper(HTTPResponse uploadResponse) {
         if (uploadResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
             return (GoogleFileEntity) JSON.deserialize(uploadResponse.getBody(), GoogleFileEntity.class);
         } else {

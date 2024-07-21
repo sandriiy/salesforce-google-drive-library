@@ -89,6 +89,10 @@ public without sharing class GoogleDrive {
             );
         }
 
+        public GoogleRetrieveFileFactory retrieve() {
+            return new GoogleRetrieveFileFactory(googleDriveInstance);
+        } 
+
         public GoogleCloneFileBuilder clone(String fileId) {
             return new GoogleCloneFileBuilder(
                 googleDriveInstance,

@@ -49,6 +49,11 @@ public class GoogleRequestBuilder {
         return this;
     }
 
+    public GoogleRequestBuilder removeParameter(String key) {
+        this.parameters.remove(key);
+        return this;
+    }
+
     public GoogleRequestBuilder setBody(String body) {
         this.bodyAsString = body;
         return this;

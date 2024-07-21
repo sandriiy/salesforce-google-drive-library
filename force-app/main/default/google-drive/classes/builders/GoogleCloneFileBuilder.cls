@@ -41,10 +41,10 @@ public class GoogleCloneFileBuilder implements GoogleFileCreator {
         this.requestGoogleBuilder.setBody(cloneBody);
 
         HTTPResponse cloneResponse = this.requestGoogleBuilder.send();
-        return this.retrieveRequestUploadWrapper(cloneResponse);
+        return this.retrieveRequestClonedWrapper(cloneResponse);
     }
 
-    private GoogleFileEntity retrieveRequestUploadWrapper(HTTPResponse cloneResponse) {
+    private GoogleFileEntity retrieveRequestClonedWrapper(HTTPResponse cloneResponse) {
         if (cloneResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
             return (GoogleFileEntity) JSON.deserialize(cloneResponse.getBody(), GoogleFileEntity.class);
         } else {

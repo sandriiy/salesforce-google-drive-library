@@ -43,10 +43,10 @@ public class GoogleCreatePermissionFileBuilder {
         this.requestGoogleBuilder.setBody(permissionBody);
 
         HTTPResponse permissionResponse = this.requestGoogleBuilder.send();
-        return this.retrieveRequestUploadWrapper(permissionResponse);
+        return this.retrieveRequestPermissionWrapper(permissionResponse);
     }
 
-    private GooglePermissionEntity retrieveRequestUploadWrapper(HTTPResponse permissionResponse) {
+    private GooglePermissionEntity retrieveRequestPermissionWrapper(HTTPResponse permissionResponse) {
         if (permissionResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
             return (GooglePermissionEntity) JSON.deserialize(permissionResponse.getBody(), GooglePermissionEntity.class);
         } else {

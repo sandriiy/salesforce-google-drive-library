@@ -2,6 +2,8 @@ public class GoogleFileEntity {
     public String kind;
     public String driveId;
     public String fileExtension;
+    public String body;
+    public Blob bodyAsBlob;
     public Boolean copyRequiresWriterPermission;
     public String md5Checksum;
     public Boolean writersCanShare;

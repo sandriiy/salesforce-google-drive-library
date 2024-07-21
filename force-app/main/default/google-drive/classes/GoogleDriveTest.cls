@@ -286,6 +286,76 @@ private class GoogleDriveTest {
         Test.stopTest();
     }
 
+    @isTest
+    private static void testRetrieveFileByDownloadMetadata() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String successFileDownloaded = '{"kind": "drive#file","id": "1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw","name": "filename","mimeType": "application/pdf"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.GET_FILE_ENDPOINT, testFileId),
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            successFileDownloaded
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().retrieve().download(testFileId)
+            .setFileDownloadType(GoogleDownloadFileBuilder.DownloadType.METADATA)
+            .setSearchOnAllDrives(false)
+            .execute();
+
+        Assert.isNotNull(result.id);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testRetrieveFileByDownloadContent() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String successFileDownloaded = 'JVBERi0xLjUKJdP0zOEKNSAwIG9iaiA8PAovQ3JlYXRvciAoQWRvYmUgUERGIGxpYn';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.GET_FILE_ENDPOINT, testFileId),
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            successFileDownloaded
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().retrieve().download(testFileId)
+            .setFileDownloadType(GoogleDownloadFileBuilder.DownloadType.CONTENT)
+            .execute();
+
+        Assert.isNotNull(result.body);
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testRetrieveFileByExport() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String successFileExported = '{"body": {"content": [{"endIndex": 650, "paragraph": {"elements": [{"endIndex": 650, "startIndex": 590, "textRun": {"content": "And this is a paragraph that follows the level two heading.\n", "textStyle": {}}}], "paragraphStyle": {"direction": "LEFT_TO_RIGHT", "namedStyleType": "NORMAL_TEXT"}}, "startIndex": 590}]}, "documentId": "1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw", "documentStyle": {}, "lists": {}, "namedStyles": {"styles": []}, "revisionId": "np_INheZiecEMA", "suggestionsViewMode": "SUGGESTIONS_INLINE", "title": "Test mule"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.EXPORT_FILE_ENDPOINT, testFileId),
+            GoogleConstants.HTTP_SUCCESS_STATUS_CODE,
+            successFileExported
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().retrieve().export(testFileId)
+            .setMimeType('text/plain')
+            .execute();
+
+        Assert.isNotNull(result.body);
+        Test.stopTest();
+    }
+
     private static String buildFileDependentEndpoint(String baseEndpoint, String fileId) {
         return String.format(baseEndpoint, new List<String>{fileId});
     }

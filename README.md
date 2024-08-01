@@ -31,40 +31,20 @@ The library provides a set of all possible interactions with the Google Drive AP
 
 ### Service Account
 
-The recommended way to set up the integration between Google Drive and Salesforce is to create a Service Account. The service account in Google Drive is a special type of Google account intended for use by applications, rather than individual users. These accounts are used to authenticate and authorize automated processes to access Google APIs securely.
+The recommended way to set up the integration between Google Drive and Salesforce is to create a Service Account. The service account in Google Drive is a special type of Google account intended for use by applications, rather than individual users. These accounts are used to authenticate and authorize automated processes to access Google APIs securely. And once the service account has been successfully created for your project, you will receive a file containing all the necessary authorization information for Salesforce.
 
-Before starting, make sure that the Google Drive API is enabled. To do this, follow these steps:
-1. Open your browser and navigate to the <a href="https://console.cloud.google.com/marketplace/product/google/drive.googleapis.com">Google Cloud Console</a>.
-2. Create a New Project (if needed).
-3. Click the “Enable” button to enable the API for your project.
-
-After the Google Drive API is enabled for your project, you need to create a Service Account to authorize access from Salesforce.
-1. Go to the <a href="https://console.cloud.google.com/projectselector2/iam-admin/serviceaccounts">Service Accounts</a> page in the Google Cloud Console.
-2. Click on “Create Service Account”.
-3. Enter a name and description for the service account, then click “Create”.
-4. Assign roles to the service account, such as “Editor” or specific roles needed for your project. Click “Continue” and then “Done”.
-5. After creating the service account, click on the service account email.
-6. Navigate to the “Keys” tab.
-7. Click “Add Key” > “Create New Key”.
-8. Choose JSON as the key type and click “Create”.
-9. The JSON key file will be downloaded to your computer.
-
-The downloaded file will contain all the information for authorization from Salesforce. The next step is to create a JWT token and account/refresh tokens from your environment.
-
-### Creating a token in Salesforce
-```diff
+### Create a token in Salesforce
 Please note, the primary objective for getting started with the library is to create an instance of the `GoogleDrive` class. This instance serves as the main and only point of interaction for you as a developer.
-```
-
-To start working with the library, you need to create an instance of the `GoogleCredential` class, which will contain the access token and its type (in this case "Bearer" type all the time). This is necessary because the `GoogleDrive` class requires these parameters, along with `applicationName`, in its constructor. Please note that the `applicationName` parameter indicates to the Google Drive API who is performing certain transactions, which can be useful for diagnostics and logging.
 
 ```java
   public GoogleDrive(GoogleCredential credentials, String applicationName) { ... }
 ```
 
-To create an instance of the `GoogleCredential` class, you can use the methods and resources available in your environment without limitations. However, this library provides a recommended approach to handle this task using the `GoogleAuthorizationCodeFlow` class and the `GoogleAuthorizer` interface. See below for details.
+To create an instance of the `GoogleCredential` class, you can use any methods and resources available in your environment without restriction. In other words, you have the flexibility to use any code or approach you prefer to create an instance of the `GoogleCredential` class manually. The `applicationName` parameter is used solely to identify the entity performing certain operations to the Google Drive API. It can be useful for logging and diagnostics, but does not impose any mandatory requirements.
 
-#### Creating a custom class
+Nevertheless, this library does not leave you to handle this task alone. Instead, it offers a recommended approach using the `GoogleAuthorizationCodeFlow` class and the `GoogleAuthorizer` interface.
+
+#### Create a custom class (optinal)
 First, you need to create a custom class that implements the `GoogleAuthorizer` interface. This requires implementing the `retrieveAccessToken` method, where you will use the Service Account credentials you downloaded to obtain the token.
 ```java
   public with sharing class CustomGoogleAuthorizer implements GoogleAuthorizer {
@@ -128,7 +108,7 @@ First, you need to create a custom class that implements the `GoogleAuthorizer` 
 ```
 In the example provided above, test credentials from the Service Account are used (you will have your own credentials). For clarity, the methods have not been broken down into smaller parts, so it’s advisable to refactor the code according to your development team's best practices, as well as using other methods such as <a href="https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm&language=en_US&type=5">Named Credentials</a>. Pay special attention to the `cleanPrivateKey` method, which removes unnecessary symbols and markings from the private key you received. This step is crucial, as failing to do so may result in an authorization error from the Google Drive API.
 
-#### Almost there
+#### Almost there (optinal)
 After creating a custom class that implements the interface and returns an access token, you can use the `GoogleAuthorizationCodeFlow` to generate the `GoogleCredential` instance and fully leverage the capabilities of this library.
 ```java
   GoogleCredential googleDriveCredentials = new GoogleAuthorizationCodeFlow.Builder()
@@ -140,6 +120,86 @@ After creating a custom class that implements the interface and returns an acces
 ```
 
 Once you’ve set up the integration, created an access token, and instantiated the `GoogleDrive` class — your gateway to using the Salesforce Google Drive Library, nothing else stands in your way. From this point on, you have full access to the capabilities for working with files in Google Drive.
+
+## Files and Folders Management
+The library presents the result of creating/cloning/uploading/exporting a file in a custom wrapper called `GoogleFileEntity`. This wrapper includes a set of all possible attributes that the Google Drive API can return. It also contains two attributes, `body` and `bodyAsBlob`, which were added to represent the content of the document if it was returned from Google Drive.
+
+### Upload a file to Google Drive
+The library provides two ways to upload a file to Google Drive using the official API endpoints, namely: <a href="https://developers.google.com/drive/api/guides/manage-uploads#simple">Simple upload</a> and <a href="https://developers.google.com/drive/api/guides/manage-uploads#multipart">Multipart upload<a>. At the same time, the library offers all the necessary tools for interaction, even if you are not familiar with how these API work.
+
+Please note that the Google Drive API treats folders and files as the same instance, differing only by <a href="https://developers.google.com/drive/api/guides/mime-types">mime type<a>. Therefore, the library does not separate the functionality for working with files and folders but instead treats these two entities as one integral group.
+
+#### Simple Upload
+When you perform a simple upload, basic metadata is created and some attributes are inferred from the file, such as the MIME type or modifiedTime. You can use a simple upload in cases where you have small files and file metadata isn't important.
+
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleFileEntity result = testGoogleDrive.files().simpleCreate()
+    .setContentType('text/plain')
+    .setContentLength(11)
+    .setFields('id, name, driveId, fileExtension')
+    .setContentBody('Hello World')
+    .execute();
+```
+
+In the example above, a simple upload is used to create a file in Google Drive. This type of upload does not support specifying metadata, so elements such as defining the file name, parent folder, etc., are not possible.
+
+#### Multipart Upload
+A multipart upload request lets you upload metadata and data in the same request. Use this option if the data you send is small enough to upload again, in its entirety, if the connection fails.
+
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleFileEntity result = testGoogleDrive.files().multipartCreate()
+    .setContentLength(11)
+    .setFields('id, name, driveId, fileExtension, mimeType, parents')
+    .setFileName('Multipart Upload')
+    .setMimeType('application/vnd.google-apps.document')
+    .setParentFolders(new List<String>{'1TLCWgrczvSFnnJpU-6OEEEXMy77OVLjM', '1TLDWgrczvSFnnJpU-2OEEEXMy77OVLjM'})
+    .setBody('text/plain', 'base64', 'Hello World')
+    .execute();
+```
+
+### Clone a file to Google Drive
+The library uses the existing Google Drive API capabilities to <a href="https://developers.google.com/drive/api/reference/rest/v3/files/copy">create copies<a> of the file and applies any requested updates with patch semantics.
+
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleFileEntity result = testGoogleDrive.files().clone(testFileId)
+    .setFields('id, name')
+    .setFileName('CopiedDocument')
+    .setMimeType('application/vnd.google-apps.document')
+    .setParentFolders(new List<String>{'1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw'})
+    .execute();
+```
+
+### Upload and Export Google Drive files
+The library utilizes existing methods for retrieving files from Google Drive while providing clear and intuitive tools for this task. A key aspect of retrieving files according to the Google Drive structure is the distinction between <a href="https://developers.google.com/drive/api/guides/mime-types">Google Workspace files</a> and others. If the file in Google Drive is of the 'Google Document' type, a special endpoint called <a href="https://developers.google.com/drive/api/reference/rest/v3/files/export">export</a> is required to retrieve it. Conversely, if the file is of the 'PNG' or 'Microsoft Word' type, another endpoint called <a href="https://developers.google.com/drive/api/reference/rest/v3/files/get">get</a> is used.
+
+#### Download a regular file from Google Drive
+
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleFileEntity result = testGoogleDrive.files().retrieve().download(testFileId)
+    .setFileDownloadType(GoogleDownloadFileBuilder.DownloadType.CONTENT)
+    .execute();
+```
+In the example above, the body of the document is downloaded from Google Drive, provided that the file is not of the Google Workspace type. Note the `setFileDownloadType()` method, which sets the return type to content. If you only need to retrieve the metadata of the file without its actual content, use the following syntax:
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleFileEntity result = testGoogleDrive.files().retrieve().download(testFileId)
+    .setFileDownloadType(GoogleDownloadFileBuilder.DownloadType.METADATA)
+    .setSearchOnAllDrives(false)
+    .execute();
+```
+
+#### Export Google Workspace file from Google Drive
+Exports a Google Workspace document to the desired MIME type and returns the exported byte content. Note that the exported content is limited to 10 MB. If you need to obtain a JSON representation of the file (which is possible with Google Workspace files), specify the appropriate MIME type from <a href="https://developers.google.com/drive/api/guides/mime-types">this list</a>.
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleFileEntity result = testGoogleDrive.files().retrieve().export(testFileId)
+    .setMimeType('text/plain')
+    .execute();
+```
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments

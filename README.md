@@ -11,9 +11,9 @@
 </div>
 
 <!-- ABOUT THE PROJECT -->
-## About The Library
+# About The Library
 
-The Salesforce Google Drive Library offers programmatic access to Google Drive through API methods. This library simplifies coding against these APIs by providing robust methods for creating, cloning, downloading, sharing, and searching files and drives. Its implementation is a fully decoupled code, ensuring compatibility across any Salesforce environment without the need for additional customizations or restrictions.
+The Salesforce Google Drive Library offers programmatic access to Google Drive through API methods. This library simplifies coding against these APIs by providing robust methods for creating, cloning, downloading, sharing, and searching files and drives. Its implementation is accompanied by a newer version of the Google Drive API v3. You can read about the benefits <a href="https://developers.google.com/drive/api/guides/v3versusv2">here</a>.
 
 To utilize this library effectively, an already configured Google Drive integration is required, as it relies on an access token for proper operation. Obtaining this token is the responsibility of the developer using the library. However, the library provides a user-friendly `GoogleCredential` interface and `GoogleAuthorizationCodeFlow` authorizer to facilitate the creation of all necessary credentials.
 
@@ -24,16 +24,42 @@ Here's why this library:
 
 Refer to the <a href="https://developers.google.com/api-client-library">Google Drive Client Libraries</a> for existing counterparts in other programming languages, as the practices and approaches used in those libraries have been applied in implementing this one.
 
-<!-- GETTING STARTED -->
-## Getting Started
+## Navigator
+<ul>
+  <li><a href="#getting-started">Getting Started</a>
+    <ul>
+      <li><a href="#service-account">Service Account</a></li>
+      <li><a href="#salesforce-token">Create a token in Salesforce</a></li>
+    </ul>
+  </li>
+  <li><a href="#files-manage">Files and Folders Management</a>
+    <ul>
+      <li><a href="#file-upload">Upload a file to Google Drive</a></li>
+      <li><a href="#file-clone">Clone a file to Google Drive</a></li>
+      <li><a href="#file-downld">Download and Export Google Drive files</a></li>
+    </ul>
+  </li>
+  <li><a href="#files-search">Files and Folders Search</a></li>
+  <li><a href="#drives-search">Drives Search</a></li>
+  <li><a href="#permissions">Permissions Management</a>
+    <ul>
+      <li><a href="#permissions-create">Create a New Permission</a></li>
+    </ul>
+  </li>
+  <li><a href="#info">Acknowledgments</a></li>
+</ul>
+
+<br>
+
+## <span id="getting-started">Getting Started</span>
 
 The library provides a set of all possible interactions with the Google Drive API. However, to ensure a secure separation of the library from your SF environment, authentication with Google Drive is your responsibility. At the same time, the library offers best practices for organizing your integration code.
 
-### Service Account
+### <span id="service-account">Service Account</span>
 
 The recommended way to set up the integration between Google Drive and Salesforce is to create a Service Account. The service account in Google Drive is a special type of Google account intended for use by applications, rather than individual users. These accounts are used to authenticate and authorize automated processes to access Google APIs securely. And once the service account has been successfully created for your project, you will receive a file containing all the necessary authorization information for Salesforce.
 
-### Create a token in Salesforce
+### <span id="salesforce-token">Create a token in Salesforce</span>
 Please note, the primary objective for getting started with the library is to create an instance of the `GoogleDrive` class. This instance serves as the main and only point of interaction for you as a developer.
 
 ```java
@@ -121,10 +147,10 @@ After creating a custom class that implements the interface and returns an acces
 
 Once you’ve set up the integration, created an access token, and instantiated the `GoogleDrive` class — your gateway to using the Salesforce Google Drive Library, nothing else stands in your way. From this point on, you have full access to the capabilities for working with files in Google Drive.
 
-## Files and Folders Management
+## <span id="files-manage">Files and Folders Management</span>
 The library presents the result of creating/cloning/uploading/exporting a file in a custom wrapper called `GoogleFileEntity`. This wrapper includes a set of all possible attributes that the Google Drive API can return. It also contains two attributes, `body` and `bodyAsBlob`, which were added to represent the content of the document if it was returned from Google Drive.
 
-### Upload a file to Google Drive
+### <span id="file-upload">Upload a file to Google Drive</span>
 The library provides two ways to upload a file to Google Drive using the official API endpoints, namely: <a href="https://developers.google.com/drive/api/guides/manage-uploads#simple">Simple upload</a> and <a href="https://developers.google.com/drive/api/guides/manage-uploads#multipart">Multipart upload<a>. At the same time, the library offers all the necessary tools for interaction, even if you are not familiar with how these API work.
 
 Please note that the Google Drive API treats folders and files as the same instance, differing only by <a href="https://developers.google.com/drive/api/guides/mime-types">mime type<a>. Therefore, the library does not separate the functionality for working with files and folders but instead treats these two entities as one integral group.
@@ -159,7 +185,7 @@ A multipart upload request lets you upload metadata and data in the same request
     .execute();
 ```
 
-### Clone a file to Google Drive
+### <span id="file-clone">Clone a file to Google Drive</span>
 The library uses the existing Google Drive API capabilities to <a href="https://developers.google.com/drive/api/reference/rest/v3/files/copy">create copies<a> of the file and applies any requested updates with patch semantics.
 
 ```java
@@ -172,7 +198,7 @@ The library uses the existing Google Drive API capabilities to <a href="https://
     .execute();
 ```
 
-### Upload and Export Google Drive files
+### <span id="file-downld">Download and Export Google Drive files</span>
 The library utilizes existing methods for retrieving files from Google Drive while providing clear and intuitive tools for this task. A key aspect of retrieving files according to the Google Drive structure is the distinction between <a href="https://developers.google.com/drive/api/guides/mime-types">Google Workspace files</a> and others. If the file in Google Drive is of the 'Google Document' type, a special endpoint called <a href="https://developers.google.com/drive/api/reference/rest/v3/files/export">export</a> is required to retrieve it. Conversely, if the file is of the 'PNG' or 'Microsoft Word' type, another endpoint called <a href="https://developers.google.com/drive/api/reference/rest/v3/files/get">get</a> is used.
 
 #### Download a regular file from Google Drive
@@ -201,9 +227,67 @@ Exports a Google Workspace document to the desired MIME type and returns the exp
     .execute();
 ```
 
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
+## <span id="files-search">Files and Folders Search<span>
+The library presents the search result in a specialized wrapper called `GoogleFileSearchResult`. This wrapper contains two public variables: 'nextPageToken', which indicates that there are more results than could be returned in a single request and this token can be used to retrieve the next set of results, and 'files' - which represents the `GoogleFileEntity` records that were returned as search results.
 
-* Will be added soon...
-* Will be added soon...
-* Will be added soon...
+To search for files and folders (as already mentioned, they are considered the same entity and will always be perceived as such), we use the <a href="https://developers.google.com/drive/api/reference/rest/v3/files/list">files.list</a> method provided by the Google Drive API. The main feature of the Google Drive search operation is the use of a special `q` search query, which defines the conditions and types of files and/or folders to be returned. See <a href="https://developers.google.com/drive/api/guides/search-files">Search for files and folders</a> for details.
+
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleFileSearchResult result = testGoogleDrive.files().search()
+    .setMaxResult(3)
+    .setSearchQuery('trashed = false')
+    .setSearchOnAllDrives(true)
+    .setOrderBy('folder,modifiedTime desc,name')
+    .execute();
+```
+In the example above, the search result is limited to 3 files (the maximum limit set by the Google Drive API is 100 per request). If there are more than 3 such files, the `nextPageToken` variable will be returned filled, which can be used to get the next set of files, also limited to three. Thus, sooner or later, it is possible to retrieve all search results. See below for how to use the token to get the next set of files.
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleFileSearchResult result = testGoogleDrive.files().search('~!!~BI9FV7ThOnDGgvVJDf_o4en1NZxEOJxjGmloO1QwivWraJd4UKiAAiFaEyV==')
+    .setOrderBy('name')
+    .execute();
+```
+
+## <span id="drives-search">Drives Search</span>
+The library presents the search result in a specialized wrapper called `GoogleDriveSearchResult`. This wrapper contains two public variables: 'nextPageToken', which indicates that there are more results than could be returned in a single request, and this token can be used to retrieve the next set of results, and 'drives' - which represents the `GoogleDriveEntity` records, which were returned as search results.
+
+To search for drives, we use the <a href="https://developers.google.com/drive/api/reference/rest/v3/drives/list">drives.list</a> method provided by the Google Drive API. The main feature of the Google Drive search operation is the use of a special `q` search query, which defines the conditions and types of drives to be returned. See <a href="https://developers.google.com/drive/api/guides/search-shareddrives">Search for shared drives</a> for details.
+
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleDriveSearchResult result = testGoogleDrive.drives().search()
+    .setMaxResult(50)
+    .setSearchQuery('')
+    .setDomainAdminAccess(false)
+    .execute();
+```
+In the example above, the search result is limited to 50 drives (the maximum limit set by the Google Drive API is 100 per request). If there are more than 50 such drives, the `nextPageToken` variable will be returned filled, which can be used to get the next set of drives. See below for how to use the token to get the next set of drives.
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GoogleDriveSearchResult result = testGoogleDrive.drives().search('4mzkteXuXufI6lXV4mzkteXuXufI6lXV')
+    .execute();
+```
+
+## <span id="permissions">Permissions Management</span>
+<b>Warning:</b> Concurrent permissions operations on the same file are not supported; only the last update is applied.
+
+### <span id="permissions-create">Create a New Permission</span>
+Creating new access to a file, folder, or drive is implemented using the <a href="https://developers.google.com/drive/api/reference/rest/v3/permissions/create">permissions.create</a> method, which supports granting access to one user at a time while specifying their role, type, and email.
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  GooglePermissionEntity result = testGoogleDrive.files().permission().create(testFileId)
+    .setSendNotificationEmail(true)
+    .setTransferOwnership(false)
+    .setPrincipalType('user')
+    .setPrincipalRole('reader')
+    .setPrincipalEmailAddress('test@gmail.com')
+    .execute();
+```
+
+<!-- ACKNOWLEDGMENTS -->
+## <span id="info">Acknowledgments</span>
+
+* https://developers.google.com/drive/api/reference/rest/v3
+* https://developers.google.com/api-client-library
+* https://www.oracle.com/corporate/features/library-in-java-best-practices.html

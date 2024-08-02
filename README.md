@@ -2,11 +2,11 @@
 <div>
   <p align="center">
     <br />
-    <a href="https://www.youtube.com/@asukhetskyi">View Demo</a>
+    <a href="https://www.youtube.com/@asukhetskyi" target="_blank">View Demo</a>
     ·
-    <a href="">Report Bug</a>
+    <a href="" target="_blank">Report Bug</a>
     ·
-    <a href="">Request Feature</a>
+    <a href="" target="_blank">Request Feature</a>
   </p>
 </div>
 

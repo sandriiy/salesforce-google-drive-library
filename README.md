@@ -24,7 +24,7 @@ Here's why this library:
 
 Refer to the <a href="https://developers.google.com/api-client-library">Google Drive Client Libraries</a> for existing counterparts in other programming languages, as the practices and approaches used in those libraries have been applied in implementing this one.
 
-## Navigator
+# Navigator
 <ul>
   <li><a href="#getting-started">Getting Started</a>
     <ul>

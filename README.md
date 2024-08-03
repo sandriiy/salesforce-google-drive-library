@@ -3,9 +3,9 @@
     <br />
     <a href="https://www.youtube.com/@asukhetskyi" target="_blank">View Demo</a>
     ·
-    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=bug&template=bug-report---.md" target="_blank">Report Bug</a>
+    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=bug&template=bug_report.md">Report Bug</a>
     ·
-    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=enhancement&template=feature-request---.md" target="_blank">Request Feature</a>
+    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=enhancement&template=feature_request.md">Request Feature</a>
   </p>
 </div>
 

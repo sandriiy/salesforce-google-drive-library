@@ -1,16 +1,14 @@
-<!-- https://github.com/othneildrew/Best-README-Template/issues/new?labels=enhancement&template=feature-request---.md -->
 <div>
   <p align="center">
     <br />
     <a href="https://www.youtube.com/@asukhetskyi" target="_blank">View Demo</a>
     ·
-    <a href="" target="_blank">Report Bug</a>
+    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=bug&template=bug-report---.md" target="_blank">Report Bug</a>
     ·
-    <a href="" target="_blank">Request Feature</a>
+    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=enhancement&template=feature-request---.md" target="_blank">Request Feature</a>
   </p>
 </div>
 
-<!-- ABOUT THE PROJECT -->
 # About The Library
 
 The Salesforce Google Drive Library offers programmatic access to Google Drive through API methods. This library simplifies coding against these APIs by providing robust methods for creating, cloning, downloading, sharing, and searching files and drives. Its implementation is accompanied by a newer version of the Google Drive API v3. You can read about the benefits <a href="https://developers.google.com/drive/api/guides/v3versusv2">here</a>.

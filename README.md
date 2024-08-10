@@ -22,6 +22,10 @@ Here's why this library:
 
 Refer to the <a href="https://developers.google.com/api-client-library">Google Drive Client Libraries</a> for existing counterparts in other programming languages, as the practices and approaches used in those libraries have been applied in implementing this one.
 
+# Contribute
+
+Interested in contributing to challenging and innovative implementations? <b>You’re in the right place</b>. This, and all other open-source libraries we offer for public use, are fully open to extensions, new ideas, and fresh approaches. We have only one requirement: the code must be clean and maintainable. If you’re interested in contributing, please feel free to contact me at ansukhetskyi@gmail.com.
+
 # Navigator
 <ul>
   <li><a href="#getting-started">Getting Started</a>

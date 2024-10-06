@@ -10,32 +10,29 @@
 </div>
 
 # Navigator
-<ul>
-  <li>
-    <a href="#getting-started">Getting Started</a>
-  </li>
-  <li><a href="#files-manage">Files and Folders Management</a>
-    <ul>
-      <li><a href="#file-upload">Upload a file to Google Drive</a></li>
-      <li><a href="#file-clone">Clone a file to Google Drive</a></li>
-      <li><a href="#file-downld">Download and Export Google Drive files</a></li>
-    </ul>
-  </li>
-  <li><a href="#files-search">Files and Folders Search</a></li>
-  <li><a href="#drives-search">Drives Search</a></li>
-  <li><a href="#permissions">Permissions Management</a>
-    <ul>
-      <li><a href="#permissions-create">Create a New Permission</a></li>
-    </ul>
-  </li>
-  <li><a href="#info">Acknowledgments</a></li>
-</ul>
+- [Getting Started](#getting-started)
+
+- [Files and Folders Management](#files-manage)
+  - [Upload a file to Google Drive](#file-upload)
+  - [Clone a file to Google Drive](#file-clone)
+  - [Download and Export Google Drive files](#file-downld)
+
+- [Files and Folders Search](#files-search)
+
+- [Drives Search](#drives-search)
+
+- [Permissions Management](#permissions)
+  - [Create a New Permission](#permissions-create)
+
+- [Acknowledgments](#info)
 
 <br>
 
 ## <span id="getting-started">Getting Started</span>
 
 The library offers a comprehensive set of interactions with the Google Drive API. However, to ensure that the library is securely separated from the Salesforce environment, it is your responsibility to authenticate with Google Drive. Please refer to <a href="https://github.com/sandriiy/salesforce-google-drive-library/wiki">this repository's documentation</a> to configure the Google Drive integration.
+
+<br>
 
 ## <span id="files-manage">Files and Folders Management</span>
 The library presents the result of creating/cloning/uploading/exporting a file in a custom wrapper called `GoogleFileEntity`. This wrapper includes a set of all possible attributes that the Google Drive API can return. It also contains two attributes, `body` and `bodyAsBlob`, which were added to represent the content of the document if it was returned from Google Drive.
@@ -117,6 +114,8 @@ Exports a Google Workspace document to the desired MIME type and returns the exp
     .execute();
 ```
 
+<br>
+
 ## <span id="files-search">Files and Folders Search<span>
 The library presents the search result in a specialized wrapper called `GoogleFileSearchResult`. This wrapper contains two public variables: 'nextPageToken', which indicates that there are more results than could be returned in a single request and this token can be used to retrieve the next set of results, and 'files' - which represents the `GoogleFileEntity` records that were returned as search results.
 
@@ -139,6 +138,8 @@ In the example above, the search result is limited to 3 files (the maximum limit
     .execute();
 ```
 
+<br>
+
 ## <span id="drives-search">Drives Search</span>
 The library presents the search result in a specialized wrapper called `GoogleDriveSearchResult`. This wrapper contains two public variables: 'nextPageToken', which indicates that there are more results than could be returned in a single request, and this token can be used to retrieve the next set of results, and 'drives' - which represents the `GoogleDriveEntity` records, which were returned as search results.
 
@@ -159,6 +160,8 @@ In the example above, the search result is limited to 50 drives (the maximum lim
     .execute();
 ```
 
+<br>
+
 ## <span id="permissions">Permissions Management</span>
 <b>Warning:</b> Concurrent permissions operations on the same file are not supported; only the last update is applied.
 
@@ -174,6 +177,8 @@ Creating new access to a file, folder, or drive is implemented using the <a href
     .setPrincipalEmailAddress('test@gmail.com')
     .execute();
 ```
+
+<br>
 
 <!-- ACKNOWLEDGMENTS -->
 ## <span id="info">Acknowledgments</span>

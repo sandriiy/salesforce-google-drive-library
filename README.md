@@ -11,19 +11,14 @@
 
 # Navigator
 - [Getting Started](#getting-started)
-
 - [Files and Folders Management](#files-manage)
   - [Upload a file to Google Drive](#file-upload)
   - [Clone a file to Google Drive](#file-clone)
   - [Download and Export Google Drive files](#file-downld)
-
 - [Files and Folders Search](#files-search)
-
 - [Drives Search](#drives-search)
-
 - [Permissions Management](#permissions)
   - [Create a New Permission](#permissions-create)
-
 - [Acknowledgments](#info)
 
 <br>

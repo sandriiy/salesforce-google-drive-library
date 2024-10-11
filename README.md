@@ -25,7 +25,7 @@
 
 ## <span id="getting-started">Getting Started</span>
 
-The library offers a comprehensive set of interactions with the Google Drive API. However, to ensure that the library is securely separated from the Salesforce environment, it is your responsibility to authenticate with Google Drive. Please refer to <a href="https://github.com/sandriiy/salesforce-google-drive-library/wiki">this repository's documentation</a> to configure the Google Drive integration.
+The library offers a comprehensive set of interactions with the Google Drive API. However, to ensure that the library is securely separated from the Salesforce environment, it is your responsibility to authenticate with Google Drive. Please refer to <a href="https://github.com/sandriiy/salesforce-google-drive-library/wiki/Connecting-Salesforce-to-Google-Drive:-A-Quick-Setup-Guide">this repository's documentation</a> to configure the Google Drive integration.
 
 <br>
 

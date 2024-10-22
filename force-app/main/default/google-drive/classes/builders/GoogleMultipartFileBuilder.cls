@@ -94,7 +94,7 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
             'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
             '{1}\r\n' +
             '--{0}\r\n' +
-            'Content-Type: {2}\r\n\r\n' +
+            'Content-Type: {2}\r\n' +
             'Content-Transfer-Encoding: {3}\r\n\r\n' +
             '{4}\r\n' +
             '--{0}--',

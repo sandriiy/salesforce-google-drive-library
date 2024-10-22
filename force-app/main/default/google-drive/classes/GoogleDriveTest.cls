@@ -110,6 +110,7 @@ private class GoogleDriveTest {
             .setMaxResult(3)
             .setSearchQuery('trashed = false')
             .setSearchOnAllDrives(true)
+            .setFields('fields/*')
             .setOrderBy('folder,modifiedTime desc,name')
             .execute();
         Assert.areEqual(3, result.files.size());
@@ -190,7 +191,7 @@ private class GoogleDriveTest {
             .setFileName('Multipart Upload')
             .setMimeType('application/vnd.google-apps.document')
             .setParentFolders(new List<String>{'1TLCWgrczvSFnnJpU-6OEEEXMy77OVLjM', '1TLDWgrczvSFnnJpU-2OEEEXMy77OVLjM'})
-            .setBody('text/plain', 'base64', 'Hello World')
+            .setBody('text/plain', '8bit', 'Hello World')
             .execute();
 
         // Fields that are specified in "setFields()" will be received 
@@ -222,7 +223,7 @@ private class GoogleDriveTest {
                 .setContentLength('11')
                 .setFields('id, name')
                 .setFileName('Multipart Failed Upload')
-                .setBody('Hello World')
+                .setBody('Hello World') // The standard "base64" encoding does not match the content
                 .execute();
         } catch (CalloutException ex) {
             Assert.areEqual(failedMultipartFileUpload, ex.getMessage());

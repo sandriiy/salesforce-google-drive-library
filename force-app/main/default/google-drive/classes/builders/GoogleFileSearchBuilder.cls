@@ -24,6 +24,11 @@ public class GoogleFileSearchBuilder {
         return this;
     }
 
+    public GoogleFileSearchBuilder setFields(String fields) {
+        this.requestGoogleBuilder.setParameter('fields', fields);
+        return this;
+    }
+
     public GoogleFileSearchBuilder setOrderBy(String orderBy) {
         this.requestGoogleBuilder.setParameter('orderBy', orderBy);
         return this;

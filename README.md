@@ -53,7 +53,7 @@ When you perform a simple upload, basic metadata is created and some attributes 
 In the example above, a simple upload is used to create a file in Google Drive. This type of upload does not support specifying metadata, so elements such as defining the file name, parent folder, etc., are not possible.
 
 #### Multipart Upload
-A multipart upload request lets you upload metadata and data in the same request. Use this option if the data you send is small enough to upload again, in its entirety, if the connection fails.
+A multipart upload request lets you upload metadata and data in the same request. Use this option if the data you send is small enough to upload again, in its entirety, if the connection fails. Please note that the library treats the document body as 'base64' encoded by default. If you're using a different encoding, you need to specify it explicitly, as shown below.
 
 ```java
   GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
@@ -63,8 +63,16 @@ A multipart upload request lets you upload metadata and data in the same request
     .setFileName('Multipart Upload')
     .setMimeType('application/vnd.google-apps.document')
     .setParentFolders(new List<String>{'1TLCWgrczvSFnnJpU-6OEEEXMy77OVLjM', '1TLDWgrczvSFnnJpU-2OEEEXMy77OVLjM'})
-    .setBody('text/plain', 'base64', 'Hello World')
+    .setBody('text/plain', '8bit', 'Hello World')
     .execute();
+```
+
+If the document body is already in 'base64' encoding, there is a simplified version of the `setBody` method where only the content needs to be specified. In this case, the document type (the first parameter) will be determined automatically.
+
+```java
+  ...
+  .setBody(microsoftWordFileContent)
+  .execute();
 ```
 
 ### <span id="file-clone">Clone a file to Google Drive</span>

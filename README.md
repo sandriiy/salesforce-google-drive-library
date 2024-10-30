@@ -1,7 +1,7 @@
 <div>
   <p align="center">
     <br />
-    <a href="https://www.youtube.com/@asukhetskyi" target="_blank">View Demo</a>
+    <a href="https://www.youtube.com/watch?v=Q35QwAvSrP0" target="_blank">View Demo</a>
     ·
     <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=bug&template=bug_report.md">Report Bug</a>
     ·

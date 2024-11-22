@@ -1,12 +1,21 @@
 {
   "packageDirectories": [
     {
-      "path": "force-app",
-      "default": true
+      "path": "google-drive",
+      "default": true,
+      "package": "apex-google-drive",
+      "versionName": "Version 1.0",
+      "versionNumber": "1.0.0.NEXT",
+      "versionDescription": "Added resumable file upload for large files (over 5 MB), the ability to delete files from Google Drive, and the option to revoke previously granted permissions for a specific user",
+      "releaseNotesUrl": "https://github.com/sandriiy/salesforce-google-drive-library/releases"
     }
   ],
   "name": "google-drive-library",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "59.0"
+  "sourceApiVersion": "59.0",
+  "packageAliases": {
+    "apex-google-drive": "0HoJ8000000TN1yKAG",
+    "apex-google-drive@1.0.0-1": "04tJ80000000RfaIAE"
+  }
 }

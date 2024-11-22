@@ -1,4 +1,4 @@
 public class GoogleDriveSearchResult {
-    public String nextPageToken;
+    @AuraEnabled public String nextPageToken;
     public List<GoogleDriveEntity> drives;
 }

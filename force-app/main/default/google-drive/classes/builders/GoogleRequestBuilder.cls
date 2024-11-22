@@ -14,6 +14,16 @@ public class GoogleRequestBuilder {
         this.parameters = new Map<String, String>();
     }
 
+    public GoogleRequestBuilder duplicate() {
+        GoogleRequestBuilder clonedGoogleRequest = this.clone();
+        clonedGoogleRequest.bodyAsString = null;
+        clonedGoogleRequest.bodyAsBlob = null;
+        clonedGoogleRequest.headers = new Map<String, String>();
+        clonedGoogleRequest.parameters = new Map<String, String>();
+
+        return clonedGoogleRequest;
+    }
+
     public GoogleRequestBuilder setEndpoint(String endpoint) {
         this.endpoint = endpoint;
         return this;

@@ -1,16 +1,14 @@
 public class GoogleMultipartFileBuilder implements GoogleFileCreator {
     private GoogleRequestBuilder requestGoogleBuilder;
+    private GoogleFileMetadataBuilder fileMetadataBuilder;
 
-    private String metadataFileName;
-    private String metadataMimeType;
-    private List<String> metadataParentFolders;
     private String dataContentType;
     private String dataTransferEncoding;
     private String dataContentBody;
 
     public GoogleMultipartFileBuilder(GoogleDrive googleDriveInstance, String endpoint, String method) {
         this.requestGoogleBuilder = new GoogleRequestBuilder(googleDriveInstance);
-        this.metadataParentFolders = new List<String>();
+        this.fileMetadataBuilder = new GoogleFileMetadataBuilder();
 
         this.requestGoogleBuilder.setEndpoint(endpoint);
         this.requestGoogleBuilder.setMethod(method);
@@ -35,17 +33,17 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
     }
 
     public GoogleMultipartFileBuilder setFileName(String fileName) {
-        this.metadataFileName = fileName;
+        this.fileMetadataBuilder.setFileProperty('name', fileName);
         return this;
     }
 
     public GoogleMultipartFileBuilder setMimeType(String mimeType) {
-        this.metadataMimeType = mimeType;
+        this.fileMetadataBuilder.setFileProperty('mimeType', mimeType);
         return this;
     }
 
     public GoogleMultipartFileBuilder setParentFolders(List<String> folderIds) {
-        this.metadataParentFolders = folderIds;
+        this.fileMetadataBuilder.setFileProperty('parents', folderIds);
         return this;
     }
 
@@ -71,7 +69,7 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
     }
 
     private GoogleFileEntity retrieveRequestCreateWrapper(HTTPResponse uploadResponse) {
-        if (uploadResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
+        if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(uploadResponse.getStatusCode())) {
             return (GoogleFileEntity) JSON.deserialize(uploadResponse.getBody(), GoogleFileEntity.class);
         } else {
             throw new CalloutException(uploadResponse.getBody());
@@ -100,31 +98,11 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
             '--{0}--',
             new List<String>{
                 GoogleConstants.MULTIPART_REQUEST_BOUNDARY,
-                this.buildMultipartRequestMetadata(),
+                this.fileMetadataBuilder.build(),
                 this.dataContentType,
                 this.dataTransferEncoding,
                 this.dataContentBody
             }
         );
-    }
-
-    private String buildMultipartRequestMetadata() {
-        Map<String, Object> fileMetadata = new Map<String, Object>();
-        this.addPairIfNotEmpty(fileMetadata, 'name', this.metadataFileName);
-        this.addPairIfNotEmpty(fileMetadata, 'mimeType', this.metadataMimeType);
-        this.addPairIfNotEmpty(fileMetadata, 'parents', this.metadataParentFolders);
-        return fileMetadata.isEmpty() ? '' : JSON.serialize(fileMetadata, true);
-    }
-
-    private void addPairIfNotEmpty(Map<String, Object> originMap, String key, String value) {
-        if (String.isNotBlank(value)) {
-            originMap.put(key, value);
-        }
-    }
-
-    private void addPairIfNotEmpty(Map<String, Object> originMap, String key, List<String> values) {
-        if (values != null && !values.isEmpty()) {
-            originMap.put(key, values);
-        }
     }
 }

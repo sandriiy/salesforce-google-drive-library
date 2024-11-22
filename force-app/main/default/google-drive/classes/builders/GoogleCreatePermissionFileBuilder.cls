@@ -47,7 +47,7 @@ public class GoogleCreatePermissionFileBuilder {
     }
 
     private GooglePermissionEntity retrieveRequestPermissionWrapper(HTTPResponse permissionResponse) {
-        if (permissionResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
+        if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(permissionResponse.getStatusCode())) {
             return (GooglePermissionEntity) JSON.deserialize(permissionResponse.getBody(), GooglePermissionEntity.class);
         } else {
             throw new CalloutException(permissionResponse.getBody());

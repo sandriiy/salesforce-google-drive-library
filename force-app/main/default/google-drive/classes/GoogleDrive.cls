@@ -73,6 +73,9 @@ public without sharing class GoogleDrive {
             return searchBuilder;
         }
 
+        /**
+         * Use this upload type to transfer a small media file (5 MB or less) without supplying metadata.
+        */
         public GoogleSimpleFileBuilder simpleCreate() {
             return new GoogleSimpleFileBuilder(
                 googleDriveInstance,
@@ -81,8 +84,24 @@ public without sharing class GoogleDrive {
             );
         }
 
+        /**
+         * Use this upload type to transfer a small file (5 MB or less) 
+         * along with metadata that describes the file, in a single request.
+        */
         public GoogleMultipartFileBuilder multipartCreate() {
             return new GoogleMultipartFileBuilder(
+                googleDriveInstance,
+                GoogleConstants.UPLOAD_FILES_ENDPOINT,
+                'POST'
+            );
+        }
+
+        /**
+         * Use this upload type for large files (greater than 5 MB) that include metadata and are uploaded in chunks.
+         * Each chunk must be represented as a split blob to be sent in the body of the HTTP request.
+         */
+         public GoogleResumableFileBuilder resumableCreate() {
+            return new GoogleResumableFileBuilder(
                 googleDriveInstance,
                 GoogleConstants.UPLOAD_FILES_ENDPOINT,
                 'POST'
@@ -99,6 +118,15 @@ public without sharing class GoogleDrive {
                 fileId,
                 GoogleConstants.CLONE_FILE_ENDPOINT,
                 'POST'
+            );
+        }
+
+        public GoogleDeleteFileBuilder remove(String fileId) {
+            return new GoogleDeleteFileBuilder(
+                googleDriveInstance,
+                fileId,
+                GoogleConstants.DELETE_FILE_ENDPOINT,
+                'DELETE'
             );
         }
 

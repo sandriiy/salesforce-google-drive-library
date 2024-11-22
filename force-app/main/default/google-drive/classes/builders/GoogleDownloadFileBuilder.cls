@@ -37,7 +37,7 @@ public class GoogleDownloadFileBuilder {
     }
 
     private GoogleFileEntity retrieveRequestDownloadWrapper(HTTPResponse downloadResponse) {
-        if (downloadResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
+        if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(downloadResponse.getStatusCode())) {
             if (this.selectedDownloadType == GoogleDownloadFileBuilder.DownloadType.METADATA) {
                 return (GoogleFileEntity) JSON.deserialize(downloadResponse.getBody(), GoogleFileEntity.class);
             } else {

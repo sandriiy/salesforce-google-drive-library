@@ -21,7 +21,7 @@ public class GoogleExportFileBuilder {
     }
 
     private GoogleFileEntity retrieveRequestExportWrapper(HTTPResponse exportResponse) {
-        if (exportResponse.getStatusCode() == GoogleConstants.HTTP_SUCCESS_STATUS_CODE) {
+        if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(exportResponse.getStatusCode())) {
             GoogleFileEntity contentFileEntity = new GoogleFileEntity();
             contentFileEntity.body = exportResponse.getBody();
             contentFileEntity.bodyAsBlob = exportResponse.getBodyAsBlob();

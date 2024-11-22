@@ -1,6 +1,6 @@
 /** 
- * The GoogleFileCreator classifies builders that create files on Google Drive,
- * including those that work with files and have a return type of an instance of that file.
+ * GoogleFileCreator organizes builders focused on creating files in Google Drive. 
+ * This interface promotes uniformity and clarity across various builder implementations.
 */
 public interface GoogleFileCreator {
     GoogleFileEntity execute();

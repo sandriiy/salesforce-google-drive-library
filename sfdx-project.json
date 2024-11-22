@@ -16,6 +16,7 @@
   "sourceApiVersion": "59.0",
   "packageAliases": {
     "apex-google-drive": "0HoJ8000000TN1yKAG",
-    "apex-google-drive@1.0.0-1": "04tJ80000000RfaIAE"
+    "apex-google-drive@1.0.0-1": "04tJ80000000RfaIAE",
+    "apex-google-drive@1.0.0-2": "04tJ80000000RffIAE"
   }
 }

@@ -1,13 +1,43 @@
-<div>
-  <p align="center">
-    <br />
-    <a href="https://www.youtube.com/watch?v=Q35QwAvSrP0" target="_blank">View Demo</a>
-    ·
-    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=bug&template=bug_report.md">Report Bug</a>
-    ·
-    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=enhancement&template=feature_request.md">Request Feature</a>
+<div align="center">
+  <p>
+    <a href="https://www.youtube.com/watch?v=Q35QwAvSrP0" target="_blank">
+      <img src="https://img.shields.io/badge/%20View%20Demo-blue?style=flat-square&logo=youtube" alt="View Demo">
+    </a>
+    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=bug&template=bug_report.md">
+      <img src="https://img.shields.io/badge/🐛%20Report%20Bug-red" alt="Report Bug">
+    </a>
+    <a href="https://github.com/sandriiy/salesforce-google-drive-library/issues/new?labels=enhancement&template=feature_request.md">
+      <img src="https://img.shields.io/badge/✨%20Request%20Feature-green" alt="Request Feature">
+    </a>
   </p>
+
+  [![Watch on GitHub](https://img.shields.io/github/watchers/sandriiy/salesforce-google-drive-library.svg?style=social)](https://github.com/sandriiy/salesforce-google-drive-library/watchers)
+  [![Star on GitHub](https://img.shields.io/github/stars/sandriiy/salesforce-google-drive-library.svg?style=social)](https://github.com/sandriiy/salesforce-google-drive-library/stargazers)
 </div>
+<br>
+
+## <span id="getting-started">Getting Started</span>
+
+The Salesforce Apex Google Drive Library offers programmatic access to Google Drive through API methods. This library simplifies coding against these APIs by providing robust methods for creating, cloning, downloading, sharing, and searching files, drives and permissions. Its implementation is accompanied by a newer version of the Google Drive API v3. You can read about the benefits [here](https://developers.google.com/drive/api/guides/v3versusv2)
+
+You can find the integration configuration, including both the Google Cloud and Salesforce sides, along with all the methods, details, and challenges, in the Wiki of this repository at the following link: https://github.com/sandriiy/salesforce-google-drive-library/wiki/Quick-Setup-Guide
+
+To get started with the Apex Google Drive library, its code needs to be deployed to the environment. All the code can either be deployed directly, contained in the `google-drive` folder and fully self-contained, or the Unlocked Package can be installed for a more modular setup of the library code. If the Unlocked Package is of interest, the two buttons below, depending on the environment, can be used to install the latest version, [v1.0.0](https://github.com/sandriiy/salesforce-google-drive-library/releases/tag/v1.0.0)
+
+<div align="center" style="display: flex; justify-content: space-between;">
+  <a href="https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ80000000RffIAE">
+    <img src="https://img.shields.io/badge/Install%20In%20Sandbox-blue?style=for-the-badge&logo=salesforce" alt="Install the Unlocked Package in Sandbox">
+  </a>
+  <a href="https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ80000000RffIAE">
+    <img src="https://img.shields.io/badge/Install%20In%20Production-blue?style=for-the-badge&logo=salesforce" alt="Install the Unlocked Package in Production">
+  </a>
+</div>
+<br>
+
+> [!NOTE]  
+> I am currently consolidating all efforts to move the documentation from the README file to the GitHub Wiki, so some elements may be available in one place but not the other, and vice versa.
+
+<br>
 
 # Navigator
 - [Getting Started](#getting-started)
@@ -15,17 +45,11 @@
   - [Upload a file to Google Drive](#file-upload)
   - [Clone a file to Google Drive](#file-clone)
   - [Download and Export Google Drive files](#file-downld)
+  - [Delete Google Drive files](#file-deletes)
 - [Files and Folders Search](#files-search)
 - [Drives Search](#drives-search)
 - [Permissions Management](#permissions)
-  - [Create a New Permission](#permissions-create)
 - [Acknowledgments](#info)
-
-<br>
-
-## <span id="getting-started">Getting Started</span>
-
-The library offers a comprehensive set of interactions with the Google Drive API. However, to ensure that the library is securely separated from the Salesforce environment, it is your responsibility to authenticate with Google Drive. Please refer to <a href="https://github.com/sandriiy/salesforce-google-drive-library/wiki/Connecting-Salesforce-to-Google-Drive:-A-Quick-Setup-Guide">this repository's documentation</a> to configure the Google Drive integration.
 
 <br>
 
@@ -33,47 +57,8 @@ The library offers a comprehensive set of interactions with the Google Drive API
 The library presents the result of creating/cloning/uploading/exporting a file in a custom wrapper called `GoogleFileEntity`. This wrapper includes a set of all possible attributes that the Google Drive API can return. It also contains two attributes, `body` and `bodyAsBlob`, which were added to represent the content of the document if it was returned from Google Drive.
 
 ### <span id="file-upload">Upload a file to Google Drive</span>
-The library provides two ways to upload a file to Google Drive using the official API endpoints, namely: <a href="https://developers.google.com/drive/api/guides/manage-uploads#simple">Simple upload</a> and <a href="https://developers.google.com/drive/api/guides/manage-uploads#multipart">Multipart upload<a>. At the same time, the library offers all the necessary tools for interaction, even if you are not familiar with how these API work.
 
-Please note that the Google Drive API treats folders and files as the same instance, differing only by <a href="https://developers.google.com/drive/api/guides/mime-types">mime type<a>. Therefore, the library does not separate the functionality for working with files and folders but instead treats these two entities as one integral group.
-
-#### Simple Upload
-When you perform a simple upload, basic metadata is created and some attributes are inferred from the file, such as the MIME type or modifiedTime. You can use a simple upload in cases where you have small files and file metadata isn't important.
-
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleFileEntity result = testGoogleDrive.files().simpleCreate()
-    .setContentType('text/plain')
-    .setContentLength(11)
-    .setFields('id, name, driveId, fileExtension')
-    .setContentBody('Hello World')
-    .execute();
-```
-
-In the example above, a simple upload is used to create a file in Google Drive. This type of upload does not support specifying metadata, so elements such as defining the file name, parent folder, etc., are not possible.
-
-#### Multipart Upload
-A multipart upload request lets you upload metadata and data in the same request. Use this option if the data you send is small enough to upload again, in its entirety, if the connection fails. Please note that the library treats the document body as 'base64' encoded by default. If you're using a different encoding, you need to specify it explicitly, as shown below.
-
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleFileEntity result = testGoogleDrive.files().multipartCreate()
-    .setContentLength(11)
-    .setFields('id, name, driveId, fileExtension, mimeType, parents')
-    .setFileName('Multipart Upload')
-    .setMimeType('application/vnd.google-apps.document')
-    .setParentFolders(new List<String>{'1TLCWgrczvSFnnJpU-6OEEEXMy77OVLjM', '1TLDWgrczvSFnnJpU-2OEEEXMy77OVLjM'})
-    .setBody('text/plain', '8bit', 'Hello World')
-    .execute();
-```
-
-If the document body is already in 'base64' encoding, there is a simplified version of the `setBody` method where only the content needs to be specified. In this case, the document type (the first parameter) will be determined automatically.
-
-```java
-  ...
-  .setBody(microsoftWordFileContent)
-  .execute();
-```
+This part of the documentation was migrated to the GitHub Wiki as part of the [Release-1.0.0](https://github.com/sandriiy/salesforce-google-drive-library/releases/tag/v1.0.0) which introduced a third method for uploading large files from Salesforce. See the migrated documentation [here](https://github.com/sandriiy/salesforce-google-drive-library/wiki/Uploading-Files-to-Google-Drive)
 
 ### <span id="file-clone">Clone a file to Google Drive</span>
 The library uses the existing Google Drive API capabilities to <a href="https://developers.google.com/drive/api/reference/rest/v3/files/copy">create copies<a> of the file and applies any requested updates with patch semantics.
@@ -114,6 +99,15 @@ Exports a Google Workspace document to the desired MIME type and returns the exp
   GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
   GoogleFileEntity result = testGoogleDrive.files().retrieve().export(testFileId)
     .setMimeType('text/plain')
+    .execute();
+```
+
+### <span id="file-deletes">Delete File from Google Drive</span>
+Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive, the user must be an organizer on the parent folder. If the target is a folder, all descendants owned by the user are also deleted.
+```java
+  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+  testGoogleDrive.files().remove(testFileId)
+    .setSupportsAllDrives(true)
     .execute();
 ```
 
@@ -168,24 +162,13 @@ In the example above, the search result is limited to 50 drives (the maximum lim
 ## <span id="permissions">Permissions Management</span>
 <b>Warning:</b> Concurrent permissions operations on the same file are not supported; only the last update is applied.
 
-### <span id="permissions-create">Create a New Permission</span>
-Creating new access to a file, folder, or drive is implemented using the <a href="https://developers.google.com/drive/api/reference/rest/v3/permissions/create">permissions.create</a> method, which supports granting access to one user at a time while specifying their role, type, and email.
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GooglePermissionEntity result = testGoogleDrive.files().permission().create(testFileId)
-    .setSendNotificationEmail(true)
-    .setTransferOwnership(false)
-    .setPrincipalType('user')
-    .setPrincipalRole('reader')
-    .setPrincipalEmailAddress('test@gmail.com')
-    .execute();
-```
-
-<br>
+This part of the documentation was migrated to the GitHub Wiki as part of the [Release-1.0.0](https://github.com/sandriiy/salesforce-google-drive-library/releases/tag/v1.0.0) which introduced new functionality to remove previously added permissions for a specific user. See the migrated documentation [here](https://github.com/sandriiy/salesforce-google-drive-library/wiki/Permissions-Management)
 
 <!-- ACKNOWLEDGMENTS -->
 ## <span id="info">Acknowledgments</span>
 
+* https://github.com/sandriiy/salesforce-google-drive-library/wiki
 * https://developers.google.com/drive/api/reference/rest/v3
 * https://developers.google.com/api-client-library
 * https://www.oracle.com/corporate/features/library-in-java-best-practices.html
+

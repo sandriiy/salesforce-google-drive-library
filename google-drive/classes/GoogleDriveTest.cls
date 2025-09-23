@@ -350,7 +350,7 @@ private class GoogleDriveTest {
         buildGoogleDriveInfo();
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-        GooglePermissionEntity result = testGoogleDrive.files().permission().create(testFileId)
+        GooglePermissionEntity result = testGoogleDrive.permissions().create(testFileId)
             .setSendNotificationEmail(true)
             .setTransferOwnership(false)
             .setPrincipalType('user')
@@ -377,10 +377,37 @@ private class GoogleDriveTest {
         buildGoogleDriveInfo();
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-        testGoogleDrive.files().permission().remove(testFileId, testPermissionId)
+        testGoogleDrive.permissions().remove(testFileId, testPermissionId)
             .setDomainAdminAccess(true)
             .setSupportsAllDrives(false)
             .execute();
+
+        Test.stopTest();
+    }
+
+	@isTest
+    private static void testPermissionFileSearch() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String permissionsSearchBody = '{"permissions":[{"id":"0123456789abcdef","emailAddress":"user@example.com"}],"kind":"drive#permissionList"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.LIST_PERMISSIONS_FILE_ENDPOINT, testFileId),
+            200,
+            permissionsSearchBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GooglePermissionSearchResult result = testGoogleDrive.permissions().search(testFileId)
+			.setMaxResult(10)
+			.setFields('emailAddress')
+			.setSearchOnAllDrives(true)
+			.execute();
+
+		Assert.areEqual(1, result.permissions.size());
+		Assert.areEqual('user@example.com', result.permissions.get(0).emailAddress);
 
         Test.stopTest();
     }
@@ -429,6 +456,32 @@ private class GoogleDriveTest {
             .execute();
 
         Assert.isNotNull(result.body);
+        Test.stopTest();
+    }
+
+	@isTest
+    private static void testRetrieveFileChunkByDownloadContent() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String successFileDownloaded = 'JVBERi0xLj';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.GET_FILE_ENDPOINT, testFileId),
+            200,
+            successFileDownloaded
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().retrieve().download(testFileId)
+            .setFileDownloadType(GoogleDownloadFileBuilder.DownloadType.CONTENT)
+			.setPartialRange(0, 9)
+			.setFields('name, description')
+            .execute();
+
+        Assert.isNotNull(result.body);
+		Assert.areEqual(10, result.body.length());
         Test.stopTest();
     }
 

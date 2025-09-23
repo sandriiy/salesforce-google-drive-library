@@ -15,6 +15,11 @@ public class GoogleExportFileBuilder {
         return this;
     }
 
+	public GoogleExportFileBuilder setFields(String fields) {
+        this.requestGoogleBuilder.setParameter('fields', fields);
+        return this;
+    }
+
     public GoogleFileEntity execute() {
         HTTPResponse exportResponse = this.requestGoogleBuilder.send();
         return this.retrieveRequestExportWrapper(exportResponse);

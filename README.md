@@ -24,10 +24,10 @@ You can find the integration configuration, including both the Google Cloud and 
 To get started with the Apex Google Drive library, its code needs to be deployed to your environment. All the code can either be deployed directly, contained in the `google-drive` folder and fully self-contained, or the Unlocked Package can be installed for a more modular setup of the library code. If the Unlocked Package is of interest, the two buttons below, depending on the environment, can be used to install the latest version:
 
 <div align="center" style="display: flex; justify-content: space-between;">
-  <a href="https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ80000000RffIAE">
+  <a href="https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ80000000SBtIAM">
     <img src="https://img.shields.io/badge/Install%20In%20Sandbox-blue?style=for-the-badge&logo=salesforce" alt="Install the Unlocked Package in Sandbox">
   </a>
-  <a href="https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ80000000RffIAE">
+  <a href="https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ80000000SBtIAM">
     <img src="https://img.shields.io/badge/Install%20In%20Production-blue?style=for-the-badge&logo=salesforce" alt="Install the Unlocked Package in Production">
   </a>
 </div>

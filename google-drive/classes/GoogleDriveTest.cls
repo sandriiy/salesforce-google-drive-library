@@ -502,7 +502,6 @@ private class GoogleDriveTest {
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
         GoogleFileEntity result = testGoogleDrive.files().retrieve().export(testFileId)
             .setMimeType('text/plain')
-			.setFields()
             .execute();
 
         Assert.isNotNull(result.body);

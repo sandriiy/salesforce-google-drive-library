@@ -21,6 +21,10 @@ public without sharing class GoogleDrive {
         return fileStream;
     }
 
+	public GooglePermissionFileFactory permissions() {
+		return new GooglePermissionFileFactory(this);
+	}
+
 
     public class DriveList {
         private GoogleDrive googleDriveInstance;
@@ -130,6 +134,7 @@ public without sharing class GoogleDrive {
             );
         }
 
+		// Deprecated. Use GoogleDrive.permissions instead.
         public GooglePermissionFileFactory permission() {
             return new GooglePermissionFileFactory(googleDriveInstance);
         }

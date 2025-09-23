@@ -74,7 +74,9 @@ public with sharing class GoogleResumableFileBuilder {
     }
 
     public GoogleBigFileEntity initialize() {
-        this.requestGoogleBuilder.setBody(this.fileMetadataBuilder.build());
+        String body = this.fileMetadataBuilder.build();
+        this.requestGoogleBuilder.setBody(body);
+        this.requestGoogleBuilder.setHeader('Content-Length', body.length());
         HTTPResponse uploadResponse = this.requestGoogleBuilder.send();
         
         GoogleBigFileEntity initialBigFile = this.retrieveRequestInitializeWrapper(uploadResponse);

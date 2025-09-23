@@ -1,9 +1,35 @@
 public inherited sharing class GoogleAuthorizationCodeFlow {
     public class Builder {
         private String apexAuthorizerName;
+        private Cache.OrgPartition orgPartition;
+        private Cache.SessionPartition sessionPartition;
+        private String partitionKey;
+        private String cachedAccessToken;
 
         public Builder setLocalGoogleAuthorizer(String apexClassName) {
             this.apexAuthorizerName = apexClassName;
+            return this;
+        }
+
+        public Builder setLocalPlatformCache(Cache.OrgPartition orgPartition, String key) {
+            this.orgPartition = orgPartition;
+            this.partitionKey = key;
+
+            if (orgPartition.contains(key)) {
+                this.cachedAccessToken = (String) orgPartition.get(key);
+            }
+
+            return this;
+        }
+
+        public Builder setLocalPlatformCache(Cache.SessionPartition sessionPartition, String key) {
+            this.sessionPartition = sessionPartition;
+            this.partitionKey = key;
+
+            if (sessionPartition.contains(key)) {
+                this.cachedAccessToken = (String) sessionPartition.get(key);
+            }
+
             return this;
         }
 
@@ -12,11 +38,26 @@ public inherited sharing class GoogleAuthorizationCodeFlow {
         }
 
         private GoogleCredential executeGoogleAuthFlow() {
-            Type authorizerType = Type.forName(this.apexAuthorizerName);
-            GoogleAuthorizer authorizerInstance = (GoogleAuthorizer) authorizerType.newInstance();
+            if (String.isNotBlank(this.cachedAccessToken)) {
+                return buildCredentialInfo(this.cachedAccessToken, 'Bearer');
+            } else {
+                Type authorizerType = Type.forName(this.apexAuthorizerName);
+                GoogleAuthorizer authorizerInstance = (GoogleAuthorizer) authorizerType.newInstance();
 
-            String accessToken = authorizerInstance.retrieveAccessToken();
-            return buildCredentialInfo(accessToken, 'Bearer');
+                String accessToken = authorizerInstance.retrieveAccessToken();
+                resolvePlatformCacheStorage(accessToken);
+                return buildCredentialInfo(accessToken, 'Bearer');
+            }
+        }
+
+        private void resolvePlatformCacheStorage(String accessToken) {
+            if (String.isBlank(this.partitionKey)) return;
+
+            if (this.orgPartition != null) {
+                this.orgPartition.put(this.partitionKey, accessToken);
+            } else if (this.sessionPartition != null) {
+                this.sessionPartition.put(this.partitionKey, accessToken);
+            }
         }
 
         private GoogleCredential buildCredentialInfo(String accessToken, String tokenType) {

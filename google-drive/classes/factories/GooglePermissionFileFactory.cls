@@ -21,8 +21,20 @@ public class GooglePermissionFileFactory {
         );
     }
 
+	public GooglePermissionSearchBuilder search(String fileId) {
+        return new GooglePermissionSearchBuilder(
+            this.googleDriveInstance,
+            this.buildSearchPermissionsFileEndpoint(fileId),
+            'GET'
+        );
+    }
+
     private String buildCreatePermissionFileEndpoint(String fileId) {
         return String.format(GoogleConstants.NEW_PERMISSION_FILE_ENDPOINT, new List<String>{fileId});
+    }
+
+	private String buildSearchPermissionsFileEndpoint(String fileId) {
+        return String.format(GoogleConstants.LIST_PERMISSIONS_FILE_ENDPOINT, new List<String>{fileId});
     }
 
     private String buildDeletePermissionFileEndpoint(String fileId, String permissionId) {

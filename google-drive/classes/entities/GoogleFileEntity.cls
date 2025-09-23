@@ -1,16 +1,16 @@
 public class GoogleFileEntity {
-    public String kind;
+    @AuraEnabled public String kind;
     public String driveId;
-    public String fileExtension;
+    @AuraEnabled public String fileExtension;
     public String body;
     public Blob bodyAsBlob;
     public Boolean copyRequiresWriterPermission;
     public String md5Checksum;
     public Boolean writersCanShare;
     public Boolean viewedByMe;
-    public String mimeType;
+    @AuraEnabled public String mimeType;
     public Map<String, String> exportLinks;
-    public List<String> parents;
+    @AuraEnabled public List<String> parents;
     public String thumbnailLink;
     public String iconLink;
     public Boolean shared;
@@ -26,9 +26,9 @@ public class GoogleFileEntity {
     public Boolean hasThumbnail;
     public List<String> spaces;
     public String folderColorRgb;
-    public String id;
-    public String name;
-    public String description;
+    @AuraEnabled public String id;
+    @AuraEnabled public String name;
+    @AuraEnabled public String description;
     public Boolean starred;
     public Boolean trashed;
     public Boolean explicitlyTrashed;

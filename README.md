@@ -73,33 +73,7 @@ The library uses the existing Google Drive API capabilities to <a href="https://
 ```
 
 ### <span id="file-downld">Download and Export Google Drive files</span>
-The library utilizes existing methods for retrieving files from Google Drive while providing clear and intuitive tools for this task. A key aspect of retrieving files according to the Google Drive structure is the distinction between <a href="https://developers.google.com/drive/api/guides/mime-types">Google Workspace files</a> and others. If the file in Google Drive is of the 'Google Document' type, a special endpoint called <a href="https://developers.google.com/drive/api/reference/rest/v3/files/export">export</a> is required to retrieve it. Conversely, if the file is of the 'PNG' or 'Microsoft Word' type, another endpoint called <a href="https://developers.google.com/drive/api/reference/rest/v3/files/get">get</a> is used.
-
-#### Download a regular file from Google Drive
-
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleFileEntity result = testGoogleDrive.files().retrieve().download(testFileId)
-    .setFileDownloadType(GoogleDownloadFileBuilder.DownloadType.CONTENT)
-    .execute();
-```
-In the example above, the body of the document is downloaded from Google Drive, provided that the file is not of the Google Workspace type. Note the `setFileDownloadType()` method, which sets the return type to content. If you only need to retrieve the metadata of the file without its actual content, use the following syntax:
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleFileEntity result = testGoogleDrive.files().retrieve().download(testFileId)
-    .setFileDownloadType(GoogleDownloadFileBuilder.DownloadType.METADATA)
-    .setSearchOnAllDrives(false)
-    .execute();
-```
-
-#### Export Google Workspace file from Google Drive
-Exports a Google Workspace document to the desired MIME type and returns the exported byte content. Note that the exported content is limited to 10 MB. If you need to obtain a JSON representation of the file (which is possible with Google Workspace files), specify the appropriate MIME type from <a href="https://developers.google.com/drive/api/guides/mime-types">this list</a>.
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleFileEntity result = testGoogleDrive.files().retrieve().export(testFileId)
-    .setMimeType('text/plain')
-    .execute();
-```
+This part of the documentation was migrated to the GitHub Wiki as part of the [Release-1.1.0](https://github.com/sandriiy/salesforce-google-drive-library/releases/tag/v1.1.0). See the migrated documentation [here](https://github.com/sandriiy/salesforce-google-drive-library/wiki/Downloading-Files-from-Google-Drive)
 
 ### <span id="file-deletes">Delete File from Google Drive</span>
 Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive, the user must be an organizer on the parent folder. If the target is a folder, all descendants owned by the user are also deleted.

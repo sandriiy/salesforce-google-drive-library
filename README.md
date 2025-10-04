@@ -34,110 +34,37 @@ To get started with the Apex Google Drive library, its code needs to be deployed
 <br>
 
 > [!NOTE]  
-> I am currently consolidating all efforts to move the documentation from the README file to the GitHub Wiki, so some elements may be available in one place but not the other, and vice versa.
+> The complete library documentation is available on the GitHub Wiki, organized into separate pages by category. Each example includes a full set of methods available for use.
 
 <br>
 
-# Navigator
-- [Getting Started](#getting-started)
-- [Files and Folders Management](#files-manage)
-  - [Upload a file to Google Drive](#file-upload)
-  - [Clone a file to Google Drive](#file-clone)
-  - [Download and Export Google Drive files](#file-downld)
-  - [Delete Google Drive files](#file-deletes)
-- [Files and Folders Search](#files-search)
-- [Drives Search](#drives-search)
-- [Permissions Management](#permissions)
-- [Acknowledgments](#info)
+## Usage Guide
 
-<br>
+To begin using this library, you first need to set up the Google Drive integration. This includes enabling the Google Drive API in the Google Admin Console, creating a Service Account, obtaining a key, and generating a certificate to upload into Salesforce. All steps are outlined in the <a href="https://github.com/sandriiy/salesforce-google-drive-library/wiki/Quick-Setup-Guide">Quick Setup Guide</a>
 
-## <span id="files-manage">Files and Folders Management</span>
-The library presents the result of creating/cloning/uploading/exporting a file in a custom wrapper called `GoogleFileEntity`. This wrapper includes a set of all possible attributes that the Google Drive API can return. It also contains two attributes, `body` and `bodyAsBlob`, which were added to represent the content of the document if it was returned from Google Drive.
+Once the setup is complete, the entry point is to instantiate the `GoogleDrive` class, which provides all builders, factories, and methods for interacting with the Google Drive API in an object-oriented manner. Detailed instructions for creating this instance are available on the <a href="https://github.com/sandriiy/salesforce-google-drive-library/wiki/Library-Authorization-Flow">Library Authorization Flow page</a>
 
-### <span id="file-upload">Upload a file to Google Drive</span>
+Through this instance, you gain access to three main categories: `files`, `drives`, and `permissions`. Each category exposes a dedicated set of operations. The full hierarchy of available methods is shown below.
 
-This part of the documentation was migrated to the GitHub Wiki as part of the [Release-1.0.0](https://github.com/sandriiy/salesforce-google-drive-library/releases/tag/v1.0.0) which introduced a third method for uploading large files from Salesforce. See the migrated documentation [here](https://github.com/sandriiy/salesforce-google-drive-library/wiki/Uploading-Files-to-Google-Drive)
+- **.files()**
+  - **.search()** – `GoogleFileSearchBuilder`
+  - **.search(String nextPageToken)** – `GoogleFileSearchBuilder`
+  - **.simpleCreate()** – `GoogleSimpleFileBuilder`
+  - **.multipartCreate()** – `GoogleMultipartFileBuilder`
+  - **.resumableCreate()** – `GoogleResumableFileBuilder`
+  - **.retrieve()** – `GoogleRetrieveFileFactory`
+    - **.download()** – `GoogleDownloadFileBuilder`
+    - **.export()** – `GoogleExportFileBuilder`
+  - **.clone(String fileId)** – `GoogleCloneFileBuilder`
+  - **.remove(String fileId)** – `GoogleDeleteFileBuilder`
+- **.drives()**
+  - **.search()** – `GoogleDriveSearchBuilder`
+  - **.search(String nextPageToken)** – `GoogleDriveSearchBuilder`
+- **.permissions()**
+  - **.create(String fileId)** – `GoogleCreatePermissionFileBuilder`
+  - **.remove(String fileId, String permissionId)** – `GoogleDeletePermissionFileBuilder`
+  - **.search(String fileId)** – `GooglePermissionSearchBuilder`
 
-### <span id="file-clone">Clone a file to Google Drive</span>
-The library uses the existing Google Drive API capabilities to <a href="https://developers.google.com/drive/api/reference/rest/v3/files/copy">create copies<a> of the file and applies any requested updates with patch semantics.
-
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleFileEntity result = testGoogleDrive.files().clone(testFileId)
-    .setFields('id, name')
-    .setFileName('CopiedDocument')
-    .setMimeType('application/vnd.google-apps.document')
-    .setParentFolders(new List<String>{'1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw'})
-    .execute();
-```
-
-### <span id="file-downld">Download and Export Google Drive files</span>
-This part of the documentation was migrated to the GitHub Wiki as part of the [Release-1.1.0](https://github.com/sandriiy/salesforce-google-drive-library/releases/tag/v1.1.0). See the migrated documentation [here](https://github.com/sandriiy/salesforce-google-drive-library/wiki/Downloading-Files-from-Google-Drive)
-
-### <span id="file-deletes">Delete File from Google Drive</span>
-Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive, the user must be an organizer on the parent folder. If the target is a folder, all descendants owned by the user are also deleted.
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  testGoogleDrive.files().remove(testFileId)
-    .setSupportsAllDrives(true)
-    .execute();
-```
-
-<br>
-
-## <span id="files-search">Files and Folders Search<span>
-The library presents the search result in a specialized wrapper called `GoogleFileSearchResult`. This wrapper contains two public variables: 'nextPageToken', which indicates that there are more results than could be returned in a single request and this token can be used to retrieve the next set of results, and 'files' - which represents the `GoogleFileEntity` records that were returned as search results.
-
-To search for files and folders (as already mentioned, they are considered the same entity and will always be perceived as such), we use the <a href="https://developers.google.com/drive/api/reference/rest/v3/files/list">files.list</a> method provided by the Google Drive API. The main feature of the Google Drive search operation is the use of a special `q` search query, which defines the conditions and types of files and/or folders to be returned. See <a href="https://developers.google.com/drive/api/guides/search-files">Search for files and folders</a> for details.
-
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleFileSearchResult result = testGoogleDrive.files().search()
-    .setMaxResult(3)
-    .setSearchQuery('trashed = false')
-    .setSearchOnAllDrives(true)
-    .setOrderBy('folder,modifiedTime desc,name')
-    .execute();
-```
-In the example above, the search result is limited to 3 files (the maximum limit set by the Google Drive API is 100 per request). If there are more than 3 such files, the `nextPageToken` variable will be returned filled, which can be used to get the next set of files, also limited to three. Thus, sooner or later, it is possible to retrieve all search results. See below for how to use the token to get the next set of files.
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleFileSearchResult result = testGoogleDrive.files().search('~!!~BI9FV7ThOnDGgvVJDf_o4en1NZxEOJxjGmloO1QwivWraJd4UKiAAiFaEyV==')
-    .setOrderBy('name')
-    .execute();
-```
-
-<br>
-
-## <span id="drives-search">Drives Search</span>
-The library presents the search result in a specialized wrapper called `GoogleDriveSearchResult`. This wrapper contains two public variables: 'nextPageToken', which indicates that there are more results than could be returned in a single request, and this token can be used to retrieve the next set of results, and 'drives' - which represents the `GoogleDriveEntity` records, which were returned as search results.
-
-To search for drives, we use the <a href="https://developers.google.com/drive/api/reference/rest/v3/drives/list">drives.list</a> method provided by the Google Drive API. The main feature of the Google Drive search operation is the use of a special `q` search query, which defines the conditions and types of drives to be returned. See <a href="https://developers.google.com/drive/api/guides/search-shareddrives">Search for shared drives</a> for details.
-
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleDriveSearchResult result = testGoogleDrive.drives().search()
-    .setMaxResult(50)
-    .setSearchQuery('')
-    .setDomainAdminAccess(false)
-    .execute();
-```
-In the example above, the search result is limited to 50 drives (the maximum limit set by the Google Drive API is 100 per request). If there are more than 50 such drives, the `nextPageToken` variable will be returned filled, which can be used to get the next set of drives. See below for how to use the token to get the next set of drives.
-```java
-  GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
-  GoogleDriveSearchResult result = testGoogleDrive.drives().search('4mzkteXuXufI6lXV4mzkteXuXufI6lXV')
-    .execute();
-```
-
-<br>
-
-## <span id="permissions">Permissions Management</span>
-<b>Warning:</b> Concurrent permissions operations on the same file are not supported; only the last update is applied.
-
-This part of the documentation was migrated to the GitHub Wiki as part of the [Release-1.0.0](https://github.com/sandriiy/salesforce-google-drive-library/releases/tag/v1.0.0) which introduced new functionality to remove previously added permissions for a specific user. See the migrated documentation [here](https://github.com/sandriiy/salesforce-google-drive-library/wiki/Permissions-Management)
-
-<!-- ACKNOWLEDGMENTS -->
 ## <span id="info">Acknowledgments</span>
 
 * https://github.com/sandriiy/salesforce-google-drive-library/wiki

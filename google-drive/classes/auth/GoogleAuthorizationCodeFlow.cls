@@ -54,9 +54,9 @@ public inherited sharing class GoogleAuthorizationCodeFlow {
             if (String.isBlank(this.partitionKey)) return;
 
             if (this.orgPartition != null) {
-                this.orgPartition.put(this.partitionKey, accessToken);
+                this.orgPartition.put(this.partitionKey, accessToken, GoogleConstants.DEFAULT_TOKEN_EXPIRATION_SECS);
             } else if (this.sessionPartition != null) {
-                this.sessionPartition.put(this.partitionKey, accessToken);
+                this.sessionPartition.put(this.partitionKey, accessToken, GoogleConstants.DEFAULT_TOKEN_EXPIRATION_SECS);
             }
         }
 

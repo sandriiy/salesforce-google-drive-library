@@ -16,6 +16,7 @@ public class GoogleConstants {
 
     public static final Integer UPLOAD_DEFAULT_INITIAL_BYTE = 0;
     public static final Integer SEARCH_DEFAULT_PAGE_SIZE = 100;
+	public static final Integer DEFAULT_TOKEN_EXPIRATION_SECS = 3600;
 
     public static final String MULTIPART_DEFAULT_TYPE = 'related';
     public static final String MULTIPART_REQUEST_BOUNDARY = 'multipart-gdrive-boundary';

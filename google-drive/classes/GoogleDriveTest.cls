@@ -63,7 +63,7 @@ private class GoogleDriveTest {
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
         try {
             GoogleDriveSearchResult result = testGoogleDrive.drives().search().execute();
-        } catch (CalloutException ex) {
+        } catch (GoogleCloudException ex) {
             Assert.areEqual(failedDriveSearchBody, ex.getMessage());
         }
 
@@ -133,7 +133,7 @@ private class GoogleDriveTest {
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
         try {
             GoogleFileSearchResult result = testGoogleDrive.files().search().execute();
-        } catch (CalloutException ex) {
+        } catch (GoogleCloudException ex) {
             Assert.areEqual(failedFileSearchBody, ex.getMessage());
         }
 
@@ -225,7 +225,7 @@ private class GoogleDriveTest {
                 .setFileName('Multipart Failed Upload')
                 .setBody('Hello World') // The standard "base64" encoding does not match the content
                 .execute();
-        } catch (CalloutException ex) {
+        } catch (GoogleCloudException ex) {
             Assert.areEqual(failedMultipartFileUpload, ex.getMessage());
         }
         Test.stopTest();

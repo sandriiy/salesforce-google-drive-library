@@ -29,6 +29,11 @@ public class GoogleSimpleFileBuilder implements GoogleFileCreator {
         return this;
     }
 
+	public GoogleSimpleFileBuilder setSupportsAllDrives(Boolean includeAllDrives) {
+		this.requestGoogleBuilder.setParameter('supportsAllDrives', includeAllDrives);
+		return this;
+	}
+
     public GoogleFileEntity execute() {
         HTTPResponse uploadResponse = this.requestGoogleBuilder.send();
         return this.retrieveRequestCreateWrapper(uploadResponse);
@@ -38,7 +43,7 @@ public class GoogleSimpleFileBuilder implements GoogleFileCreator {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(uploadResponse.getStatusCode())) {
             return (GoogleFileEntity) JSON.deserialize(uploadResponse.getBody(), GoogleFileEntity.class);
         } else {
-            throw new CalloutException(uploadResponse.getBody());
+            throw new GoogleCloudException(uploadResponse.getBody());
         }
     }
 }

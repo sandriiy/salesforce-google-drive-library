@@ -4,6 +4,124 @@ private class GoogleDriveTest {
     private static String userAgentName;
 
     @isTest
+    private static void testSupportsAllDrivesFlagOnFileDelete() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.DELETE_FILE_ENDPOINT, testFileId),
+            204,
+            ''
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        testGoogleDrive.files().remove(testFileId)
+            .setSupportsAllDrives(true) // Lets this request target files residing in Shared Drives
+            .execute();
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testSupportsAllDrivesOnFileSearch() {
+        String fullFileSearchBody = '{"kind": "drive#fileList","incompleteSearch": false,"files": [{"kind": "drive#file","mimeType": "application/vnd.google-apps.folder","id": "1dmEbuynf_W6064Acrx8RrpqU4EL60mRs","name": "Test"}]}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.SEARCH_FILES_ENDPOINT,
+            200,
+            fullFileSearchBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileSearchResult result = testGoogleDrive.files().search()
+            .setSearchQuery('trashed = false')
+            .setSearchOnAllDrives(true) // Enables searching items that live inside Shared Drives
+            .setMaxResult(1)
+            .execute();
+        Assert.areEqual(1, result.files.size());
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testSupportsAllDrivesOnPermissionList() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String permissionsSearchBody = '{"permissions":[{"id":"0123456789abcdef","emailAddress":"user@example.com"}],"kind":"drive#permissionList"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.LIST_PERMISSIONS_FILE_ENDPOINT, testFileId),
+            200,
+            permissionsSearchBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GooglePermissionSearchResult result = testGoogleDrive.permissions().search(testFileId)
+            .setSearchOnAllDrives(true) // Allow permission introspection on Shared Drive items
+            .setMaxResult(10)
+            .execute();
+
+        Assert.areEqual(1, result.permissions.size());
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testFailWhenSharedDriveNotSpecified_FileSearch() {
+        String failedFileSearchBody = '{"error": {"errors": [{"domain": "global","reason": "required","message": "shared drive not specified"}],"code": 400,"message": "shared drive not specified"}}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.SEARCH_FILES_ENDPOINT,
+            400,
+            failedFileSearchBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        try {
+            GoogleFileSearchResult result = testGoogleDrive.files().search()
+                .setSearchQuery('name contains "Test"')
+                .execute();
+            System.assert(false, 'Exception expected');
+        } catch (GoogleCloudException ex) {
+            // API returns 400 when querying Shared Drive scope without indicating which drive or enabling all drives
+            Assert.areEqual(failedFileSearchBody, ex.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    @isTest
+    private static void testFailWhenSharedDriveNotSpecified_PermissionsList() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String failedPermissionsBody = '{"error": {"errors": [{"domain": "global","reason": "required","message": "shared drive not specified"}],"code": 400,"message": "shared drive not specified"}}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.LIST_PERMISSIONS_FILE_ENDPOINT, testFileId),
+            400,
+            failedPermissionsBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        try {
+            GooglePermissionSearchResult result = testGoogleDrive.permissions().search(testFileId).execute();
+            System.assert(false, 'Exception expected');
+        } catch (GoogleCloudException ex) {
+            // API expects Shared Drive awareness for permission listings of Shared Drive files
+            Assert.areEqual(failedPermissionsBody, ex.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    @isTest
     private static void testFullDriveSearch() {
         String fullDriveSearchBody = '{"kind":"drive#fileList","drives":[{"id":"drive123","name":"My Drive","colorRgb":"#FFFFFF","kind":"drive#drive","backgroundImageLink":"https://example.com/image.png","capabilities":{"canAddChildren":true,"canComment":true,"canCopy":true,"canDeleteDrive":false,"canDownload":true,"canEdit":true,"canListChildren":true,"canManageMembers":true,"canReadRevisions":true,"canRename":true,"canRenameDrive":true,"canChangeDriveBackground":true,"canShare":true,"canChangeCopyRequiresWriterPermissionRestriction":false,"canChangeDomainUsersOnlyRestriction":false,"canChangeDriveMembersOnlyRestriction":false,"canChangeSharingFoldersRequiresOrganizerPermissionRestriction":false,"canResetDriveRestrictions":false,"canDeleteChildren":false,"canTrashChildren":true},"themeId":"theme123","backgroundImageFile":{"id":"image123","xCoordinate":100.0,"yCoordinate":50.0,"width":800.0},"createdTime":"2023-06-15T10:30:00Z","hidden":false,"restrictions":{"copyRequiresWriterPermission":true,"domainUsersOnly":false,"driveMembersOnly":true,"adminManagedRestrictions":false,"sharingFoldersRequiresOrganizerPermission":true},"orgUnitId":"org123"},{"id":"drive456","name":"Not Populated Drive"}]}';
         GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
@@ -109,7 +227,7 @@ private class GoogleDriveTest {
         GoogleFileSearchResult result = testGoogleDrive.files().search()
             .setMaxResult(3)
             .setSearchQuery('trashed = false')
-            .setSearchOnAllDrives(true)
+            .setSearchOnAllDrives(true) // Include items from Shared Drives in search results
             .setFields('fields/*')
             .setOrderBy('folder,modifiedTime desc,name')
             .execute();
@@ -330,7 +448,7 @@ private class GoogleDriveTest {
 
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
         testGoogleDrive.files().remove(testFileId)
-            .setSupportsAllDrives(true)
+            .setSupportsAllDrives(true) // Allow delete operation on Shared Drive files
             .execute();
         Test.stopTest();
     }
@@ -403,7 +521,7 @@ private class GoogleDriveTest {
         GooglePermissionSearchResult result = testGoogleDrive.permissions().search(testFileId)
 			.setMaxResult(10)
 			.setFields('emailAddress')
-			.setSearchOnAllDrives(true)
+			.setSearchOnAllDrives(true) // List permissions for items located in Shared Drives
 			.execute();
 
 		Assert.areEqual(1, result.permissions.size());
@@ -429,7 +547,7 @@ private class GoogleDriveTest {
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
         GoogleFileEntity result = testGoogleDrive.files().retrieve().download(testFileId)
             .setFileDownloadType(GoogleDownloadFileBuilder.DownloadType.METADATA)
-            .setSearchOnAllDrives(false)
+            .setSearchOnAllDrives(false) // Restrict to My Drive only; no Shared Drives lookup
             .execute();
 
         Assert.isNotNull(result.id);
@@ -502,6 +620,8 @@ private class GoogleDriveTest {
         GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
         GoogleFileEntity result = testGoogleDrive.files().retrieve().export(testFileId)
             .setMimeType('text/plain')
+			.setFields('name, description')
+			.setSearchOnAllDrives(true)
             .execute();
 
         Assert.isNotNull(result.body);

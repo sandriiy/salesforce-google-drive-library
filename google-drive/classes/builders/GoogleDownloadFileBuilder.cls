@@ -37,6 +37,12 @@ public class GoogleDownloadFileBuilder {
         return this;
     }
 
+	public GoogleDownloadFileBuilder setPartialRange(Long startByte, Long endByte) {
+		String downloadRange = 'bytes=' + String.valueOf(startByte) + '-' + String.valueOf(endByte);
+        this.requestGoogleBuilder.setHeader('Range', downloadRange);
+        return this;
+    }
+
 	public GoogleDownloadFileBuilder setFields(String fields) {
         this.requestGoogleBuilder.setParameter('fields', fields);
         return this;
@@ -58,7 +64,7 @@ public class GoogleDownloadFileBuilder {
                 return contentFileEntity;
             }
         } else {
-            throw new CalloutException(downloadResponse.getBody());
+            throw new GoogleCloudException(downloadResponse.getBody());
         }
     }
 }

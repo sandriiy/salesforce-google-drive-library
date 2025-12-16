@@ -37,6 +37,11 @@ public class GoogleCreatePermissionFileBuilder {
         return this;
     }
 
+	public GoogleCreatePermissionFileBuilder setSupportsAllDrives(Boolean includeAllDrives) {
+        this.requestGoogleBuilder.setParameter('supportsAllDrives', includeAllDrives);
+        return this;
+    }
+
     public GooglePermissionEntity execute() {
         String permissionBody = this.buildPermissionFileRequestBody();
         this.requestGoogleBuilder.setHeader('Content-Length', permissionBody.length());
@@ -50,7 +55,7 @@ public class GoogleCreatePermissionFileBuilder {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(permissionResponse.getStatusCode())) {
             return (GooglePermissionEntity) JSON.deserialize(permissionResponse.getBody(), GooglePermissionEntity.class);
         } else {
-            throw new CalloutException(permissionResponse.getBody());
+            throw new GoogleCloudException(permissionResponse.getBody());
         }
     }
 

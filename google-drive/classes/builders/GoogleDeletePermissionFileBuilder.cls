@@ -26,7 +26,7 @@ public class GoogleDeletePermissionFileBuilder {
 
     private void validateDeletionPermissionRequest(HTTPResponse permissionResponse) {
         if (!GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(permissionResponse.getStatusCode())) {
-            throw new CalloutException(permissionResponse.getBody());
+            throw new GoogleCloudException(permissionResponse.getBody());
         }
     }
 }

@@ -32,6 +32,11 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
         return this;
     }
 
+	public GoogleMultipartFileBuilder setSupportsAllDrives(Boolean includeAllDrives) {
+        this.requestGoogleBuilder.setParameter('supportsAllDrives', includeAllDrives);
+        return this;
+    }
+
     public GoogleMultipartFileBuilder setFileName(String fileName) {
         this.fileMetadataBuilder.setFileProperty('name', fileName);
         return this;
@@ -72,7 +77,7 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(uploadResponse.getStatusCode())) {
             return (GoogleFileEntity) JSON.deserialize(uploadResponse.getBody(), GoogleFileEntity.class);
         } else {
-            throw new CalloutException(uploadResponse.getBody());
+            throw new GoogleCloudException(uploadResponse.getBody());
         }
     }
 

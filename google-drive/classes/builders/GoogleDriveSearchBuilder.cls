@@ -38,7 +38,7 @@ public class GoogleDriveSearchBuilder {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(searchResponse.getStatusCode())) {
             return (GoogleDriveSearchResult) JSON.deserialize(searchResponse.getBody(), GoogleDriveSearchResult.class);
         } else {
-            throw new CalloutException(searchResponse.getBody());
+            throw new GoogleCloudException(searchResponse.getBody());
         }
     }
 }

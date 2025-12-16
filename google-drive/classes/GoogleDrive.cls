@@ -134,6 +134,15 @@ public without sharing class GoogleDrive {
             );
         }
 
+		// Uses Drive API v2. In v3, this is done via files.update with trashed=true
+		public GoogleTrashFileBuilder trash(String fileId) {
+            return new GoogleTrashFileBuilder(
+                googleDriveInstance,
+                fileId,
+                GoogleConstants.TRASH_FILE_ENDPOINT
+            );
+        }
+
 		// Deprecated. Use GoogleDrive.permissions instead.
         public GooglePermissionFileFactory permission() {
             return new GooglePermissionFileFactory(googleDriveInstance);

@@ -20,6 +20,11 @@ public class GoogleExportFileBuilder {
         return this;
     }
 
+	public GoogleExportFileBuilder setSearchOnAllDrives(Boolean includeAllDrives) {
+        this.requestGoogleBuilder.setParameter('supportsAllDrives', includeAllDrives);
+        return this;
+    }
+
     public GoogleFileEntity execute() {
         HTTPResponse exportResponse = this.requestGoogleBuilder.send();
         return this.retrieveRequestExportWrapper(exportResponse);
@@ -32,7 +37,7 @@ public class GoogleExportFileBuilder {
             contentFileEntity.bodyAsBlob = exportResponse.getBodyAsBlob();
             return contentFileEntity;
         } else {
-            throw new CalloutException(exportResponse.getBody());
+            throw new GoogleCloudException(exportResponse.getBody());
         }
     }
 }

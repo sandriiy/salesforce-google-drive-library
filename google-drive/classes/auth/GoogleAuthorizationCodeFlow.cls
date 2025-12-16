@@ -26,7 +26,7 @@ public inherited sharing class GoogleAuthorizationCodeFlow {
             this.sessionPartition = sessionPartition;
             this.partitionKey = key;
 
-            if (sessionPartition.contains(key)) {
+            if (!isAsync() && sessionPartition.contains(key)) {
                 this.cachedAccessToken = (String) sessionPartition.get(key);
             }
 
@@ -54,9 +54,9 @@ public inherited sharing class GoogleAuthorizationCodeFlow {
             if (String.isBlank(this.partitionKey)) return;
 
             if (this.orgPartition != null) {
-                this.orgPartition.put(this.partitionKey, accessToken);
-            } else if (this.sessionPartition != null) {
-                this.sessionPartition.put(this.partitionKey, accessToken);
+                this.orgPartition.put(this.partitionKey, accessToken, GoogleConstants.DEFAULT_TOKEN_EXPIRATION_SECS);
+            } else if (this.sessionPartition != null && !isAsync()) {
+                this.sessionPartition.put(this.partitionKey, accessToken, GoogleConstants.DEFAULT_TOKEN_EXPIRATION_SECS);
             }
         }
 
@@ -67,5 +67,9 @@ public inherited sharing class GoogleAuthorizationCodeFlow {
             
             return newCredential;
         }
+
+		private Boolean isAsync() {
+			return System.isBatch() || System.isQueueable() || System.isScheduled() || System.isFuture();
+		}
     }
 }

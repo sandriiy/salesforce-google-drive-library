@@ -23,6 +23,26 @@ private class GoogleDriveTest {
         Test.stopTest();
     }
 
+	@isTest
+    private static void testSupportsAllDrivesFlagOnFileTrash() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.TRASH_FILE_ENDPOINT, testFileId),
+            200,
+            ''
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        testGoogleDrive.files().trash(testFileId)
+            .setSupportsAllDrives(true) // Lets this request target files residing in Shared Drives
+            .execute();
+        Test.stopTest();
+    }
+
     @isTest
     private static void testSupportsAllDrivesOnFileSearch() {
         String fullFileSearchBody = '{"kind": "drive#fileList","incompleteSearch": false,"files": [{"kind": "drive#file","mimeType": "application/vnd.google-apps.folder","id": "1dmEbuynf_W6064Acrx8RrpqU4EL60mRs","name": "Test"}]}';

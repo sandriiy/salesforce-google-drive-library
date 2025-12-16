@@ -4,6 +4,7 @@ public class GoogleConstants {
     public static final String UPLOAD_FILES_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3/files';
     public static final String CLONE_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}/copy';
     public static final String DELETE_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}';
+	public static final String TRASH_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v2/files/{0}/trash';
     public static final String NEW_PERMISSION_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}/permissions';
 	public static final String LIST_PERMISSIONS_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}/permissions';
     public static final String DELETE_PERMISSION_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}/permissions/{1}';

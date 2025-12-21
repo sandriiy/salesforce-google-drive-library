@@ -77,6 +77,7 @@ public class GoogleRequestBuilder {
     public HTTPResponse send() {
         HttpRequest req = new HttpRequest();
         req.setMethod(this.method);
+		req.setTimeout(60000);
 
         this.buildEndpointUrl(req);
         this.buildEndpointHeaders(req);

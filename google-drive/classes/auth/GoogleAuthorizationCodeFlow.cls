@@ -26,9 +26,13 @@ public inherited sharing class GoogleAuthorizationCodeFlow {
             this.sessionPartition = sessionPartition;
             this.partitionKey = key;
 
-            if (!isAsync() && sessionPartition.contains(key)) {
-                this.cachedAccessToken = (String) sessionPartition.get(key);
-            }
+			try {
+				if (sessionPartition.contains(key)) {
+					this.cachedAccessToken = (String) sessionPartition.get(key);
+				}
+			} catch(Exception ex) {
+				// No action required. This error occurs in asynchronous or flow invocable contexts.
+			}
 
             return this;
         }
@@ -53,11 +57,15 @@ public inherited sharing class GoogleAuthorizationCodeFlow {
         private void resolvePlatformCacheStorage(String accessToken) {
             if (String.isBlank(this.partitionKey)) return;
 
-            if (this.orgPartition != null) {
-                this.orgPartition.put(this.partitionKey, accessToken, GoogleConstants.DEFAULT_TOKEN_EXPIRATION_SECS);
-            } else if (this.sessionPartition != null && !isAsync()) {
-                this.sessionPartition.put(this.partitionKey, accessToken, GoogleConstants.DEFAULT_TOKEN_EXPIRATION_SECS);
-            }
+			try {
+				if (this.orgPartition != null) {
+					this.orgPartition.put(this.partitionKey, accessToken, GoogleConstants.DEFAULT_TOKEN_EXPIRATION_SECS);
+				} else if (this.sessionPartition != null) {
+					this.sessionPartition.put(this.partitionKey, accessToken, GoogleConstants.DEFAULT_TOKEN_EXPIRATION_SECS);
+				}
+			} catch (Exception ex) {
+				// No action required. This error occurs in asynchronous or flow invocable contexts.
+			}
         }
 
         private GoogleCredential buildCredentialInfo(String accessToken, String tokenType) {
@@ -67,9 +75,5 @@ public inherited sharing class GoogleAuthorizationCodeFlow {
             
             return newCredential;
         }
-
-		private Boolean isAsync() {
-			return System.isBatch() || System.isQueueable() || System.isScheduled() || System.isFuture();
-		}
     }
 }

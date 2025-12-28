@@ -4,9 +4,9 @@
       "path": "google-drive",
       "default": true,
       "package": "apex-google-drive",
-      "versionName": "Version 1.2.1",
-      "versionNumber": "1.2.1.NEXT",
-      "versionDescription": "Bug Fixes: HTTP Callout Timeout When Downloading Large Files & Platform Cache Fails in Flow Invokable Context.",
+      "versionName": "Version 1.2.2",
+      "versionNumber": "1.2.2.NEXT",
+      "versionDescription": "Bug Fixes: Added required Remote Site Settings for authentication tokens and API endpoints.",
       "releaseNotesUrl": "https://github.com/sandriiy/salesforce-google-drive-library/releases"
     }
   ],
@@ -20,6 +20,7 @@
     "apex-google-drive@1.0.0-2": "04tJ80000000RffIAE",
     "apex-google-drive@1.1.0-1": "04tJ80000000SBtIAM",
     "apex-google-drive@1.2.0-1": "04tJ80000011MDEIA2",
-    "apex-google-drive@1.2.1-1": "04tJ80000011MDOIA2"
+    "apex-google-drive@1.2.1-1": "04tJ80000011MDOIA2",
+    "apex-google-drive@1.2.2-1": "04tJ80000011MDdIAM"
   }
 }

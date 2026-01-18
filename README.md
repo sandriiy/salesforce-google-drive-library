@@ -39,7 +39,7 @@ You can also use Salesforce CLI to install this package. To do so, run the follo
 <br>
 
 > [!NOTE]  
-> The complete library documentation is available on the GitHub Wiki, organized into separate pages by category. Each example includes a full set of methods available for use.
+> This library provides an SDK that offers a simplified, developer-friendly interface for working with Google Drive. Our team recently released a new project that delivers a full Google Client experience, allowing you to completely replace Salesforce Files. For more details, see here — https://github.com/sandriiy/salesforce-google-client
 
 ## Usage Guide
 

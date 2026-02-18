@@ -32,6 +32,11 @@ public class GoogleCreatePermissionFileBuilder {
         return this;
     }
 
+	public GoogleCreatePermissionFileBuilder setPrincipalDomain(String domain) {
+        this.newPermission.put('domain', domain);
+        return this;
+    }
+
     public GoogleCreatePermissionFileBuilder setPrincipalEmailAddress(String emailAddress) {
         this.newPermission.put('emailAddress', emailAddress);
         return this;
@@ -55,7 +60,7 @@ public class GoogleCreatePermissionFileBuilder {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(permissionResponse.getStatusCode())) {
             return (GooglePermissionEntity) JSON.deserialize(permissionResponse.getBody(), GooglePermissionEntity.class);
         } else {
-            throw new GoogleCloudException(permissionResponse.getBody());
+			throw this.requestGoogleBuilder.error(permissionResponse.getBody());
         }
     }
 

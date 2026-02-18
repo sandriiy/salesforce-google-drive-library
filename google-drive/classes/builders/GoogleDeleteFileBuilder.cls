@@ -21,7 +21,7 @@ public class GoogleDeleteFileBuilder {
 
     private void validateDeletionPermissionRequest(HTTPResponse deleteResponse) {
         if (!GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(deleteResponse.getStatusCode())) {
-            throw new GoogleCloudException(deleteResponse.getBody());
+			throw this.requestGoogleBuilder.error(deleteResponse.getBody());
         }
     }
 

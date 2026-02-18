@@ -32,6 +32,11 @@ public class GoogleCloneFileBuilder implements GoogleFileCreator {
         return this;
     }
 
+	public GoogleCloneFileBuilder setCustomAttributes(Map<String, Object> values) {
+        this.fileMetadataBuilder.setFileProperty('appProperties', values);
+        return this;
+    }
+
 	public GoogleCloneFileBuilder setSupportsAllDrives(Boolean includeAllDrives) {
         this.requestGoogleBuilder.setParameter('supportsAllDrives', includeAllDrives);
         return this;
@@ -50,7 +55,7 @@ public class GoogleCloneFileBuilder implements GoogleFileCreator {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(cloneResponse.getStatusCode())) {
             return (GoogleFileEntity) JSON.deserialize(cloneResponse.getBody(), GoogleFileEntity.class);
         } else {
-            throw new GoogleCloudException(cloneResponse.getBody());
+			throw this.requestGoogleBuilder.error(cloneResponse.getBody());
         }
     }
 

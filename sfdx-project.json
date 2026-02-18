@@ -4,9 +4,9 @@
       "path": "google-drive",
       "default": true,
       "package": "apex-google-drive",
-      "versionName": "Version 1.2.2",
-      "versionNumber": "1.2.2.NEXT",
-      "versionDescription": "Bug Fixes: Added required Remote Site Settings for authentication tokens and API endpoints.",
+      "versionName": "Version 1.2.3",
+      "versionNumber": "1.2.3.NEXT",
+      "versionDescription": "Added a new error-handling mechanism, a new builder for updating file metadata, and support for organization-specific custom attributes.",
       "releaseNotesUrl": "https://github.com/sandriiy/salesforce-google-drive-library/releases"
     }
   ],
@@ -21,6 +21,7 @@
     "apex-google-drive@1.1.0-1": "04tJ80000000SBtIAM",
     "apex-google-drive@1.2.0-1": "04tJ80000011MDEIA2",
     "apex-google-drive@1.2.1-1": "04tJ80000011MDOIA2",
-    "apex-google-drive@1.2.2-1": "04tJ80000011MDdIAM"
+    "apex-google-drive@1.2.2-1": "04tJ80000011MDdIAM",
+    "apex-google-drive@1.2.3-1": "04tJ80000011MFtIAM"
   }
 }

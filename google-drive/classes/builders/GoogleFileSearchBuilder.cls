@@ -54,7 +54,7 @@ public class GoogleFileSearchBuilder {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(searchResponse.getStatusCode())) {
             return (GoogleFileSearchResult) JSON.deserialize(searchResponse.getBody(), GoogleFileSearchResult.class);
         } else {
-            throw new GoogleCloudException(searchResponse.getBody());
+			throw this.requestGoogleBuilder.error(searchResponse.getBody());
         }
     }
 }

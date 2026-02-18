@@ -2,7 +2,9 @@ public class GoogleConstants {
     public static final String SEARCH_DRIVES_ENDPOINT = 'https://www.googleapis.com/drive/v3/drives';
     public static final String SEARCH_FILES_ENDPOINT = 'https://www.googleapis.com/drive/v3/files';
     public static final String UPLOAD_FILES_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3/files';
+	public static final String VERSION_UPLOAD_FILES_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3/files/{0}';
     public static final String CLONE_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}/copy';
+	public static final String UPDATE_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}';
     public static final String DELETE_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}';
 	public static final String TRASH_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v2/files/{0}/trash';
     public static final String NEW_PERMISSION_FILE_ENDPOINT = 'https://www.googleapis.com/drive/v3/files/{0}/permissions';

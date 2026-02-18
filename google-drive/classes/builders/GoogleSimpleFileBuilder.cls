@@ -43,7 +43,7 @@ public class GoogleSimpleFileBuilder implements GoogleFileCreator {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(uploadResponse.getStatusCode())) {
             return (GoogleFileEntity) JSON.deserialize(uploadResponse.getBody(), GoogleFileEntity.class);
         } else {
-            throw new GoogleCloudException(uploadResponse.getBody());
+			throw this.requestGoogleBuilder.error(uploadResponse.getBody());
         }
     }
 }

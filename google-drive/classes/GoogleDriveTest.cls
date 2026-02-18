@@ -3,6 +3,74 @@ private class GoogleDriveTest {
     private static GoogleCredential testCredentials;
     private static String userAgentName;
 
+	@TestVisible private static Boolean failStrategyWasCalled = false;
+	public class TestGoogleFileErrorHandler implements GoogleFailureStrategy {
+		public void onFailure(GoogleCloudException ex) {
+			// Your Error Processing
+			System.debug(ex.getMessage());
+			System.debug(ex.endpoint);
+			System.debug(JSON.serialize(ex.httpHeaders));
+			System.debug(JSON.serialize(ex.httpParameters));
+
+			GoogleDriveTest.failStrategyWasCalled = true;
+		}
+	}
+
+	@isTest
+    private static void testFailureStrategeWithSearchFiles() {
+        String failedFileSearchBody = '{"error": {"errors": [{"domain": "global","reason": "required","message": "shared drive not specified"}],"code": 400,"message": "shared drive not specified"}}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.SEARCH_FILES_ENDPOINT,
+            400,
+            failedFileSearchBody
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName).withFailureStrategy('GoogleDriveTest.TestGoogleFileErrorHandler');
+        try {
+            GoogleFileSearchResult result = testGoogleDrive.files().search()
+                .setSearchQuery('name contains "Test"')
+                .execute();
+				
+            System.assert(false, 'Exception expected');
+        } catch (GoogleCloudException ex) {
+            Assert.areEqual(true, GoogleDriveTest.failStrategyWasCalled);
+        }
+        Test.stopTest();
+    }
+
+	@isTest
+    private static void testModifyExistingFileMetadata() {
+        String successSimpleFileChange = '{"id": "1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9","name": "My Document","parents": ["0BwwA4oUTeiV2NHRlWE56R2EwOEU"]}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.UPDATE_FILE_ENDPOINT,
+            200,
+            successSimpleFileChange
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+		String existingFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+		String existingParentFolderId = '0BwwA4oUTeiV1NHRlWE56R2EwOEU';
+		String newParentFolderId = '0BwwA4oUTeiV2NHRlWE56R2EwOEU';
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().modify().metadata(existingFileId)
+            .addParentFolders(new List<String>{newParentFolderId})
+            .removeParentFolders(new List<String>{existingParentFolderId})
+            .setSupportsAllDrives(true)
+			.setFields('name, parents')
+            .execute();
+
+        Assert.areEqual(newParentFolderId, result.parents.get(0));
+        Test.stopTest();
+    }
+
     @isTest
     private static void testSupportsAllDrivesFlagOnFileDelete() {
         String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
@@ -443,6 +511,7 @@ private class GoogleDriveTest {
             .setFields('id, name')
             .setFileName('CopiedDocument')
             .setMimeType('application/vnd.google-apps.document')
+			.setCustomAttributes(new Map<String, String>{'recordId' => '1A000000000000'})
             .setParentFolders(new List<String>{'1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw'})
             .execute();
 
@@ -494,6 +563,32 @@ private class GoogleDriveTest {
             .setPrincipalType('user')
             .setPrincipalRole('reader')
             .setPrincipalEmailAddress('test@gmail.com')
+            .execute();
+
+        Assert.isNotNull(result.id);
+        Test.stopTest();
+    }
+
+	@isTest
+    private static void testPermissionFileDomainCreate() {
+        String testFileId = '1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw';
+        String successFilePermissionCreated = '{"kind": "drive#permission","id": "1lhu72ZrlfzRljhP4t12RE5GDGa8n7Yv8LHWy20_QBqw","type": "domain"}';
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            buildFileDependentEndpoint(GoogleConstants.NEW_PERMISSION_FILE_ENDPOINT, testFileId),
+            200,
+            successFilePermissionCreated
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GooglePermissionEntity result = testGoogleDrive.permissions().create(testFileId)
+            .setSupportsAllDrives(true)
+            .setPrincipalType('domain')
+            .setPrincipalRole('reader')
+            .setPrincipalDomain('cloudrylabs.com')
             .execute();
 
         Assert.isNotNull(result.id);

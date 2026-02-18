@@ -1,6 +1,7 @@
 public without sharing class GoogleDrive {
     public GoogleCredential credentials;
     public String userAgentName;
+	public String failureStrategy;
 
     private DriveList driveStream;
     private FileList fileStream;
@@ -11,6 +12,11 @@ public without sharing class GoogleDrive {
 
         this.driveStream = new DriveList(this);
         this.fileStream = new FileList(this);
+    }
+
+	public GoogleDrive withFailureStrategy(String strategyClassName) {
+        this.failureStrategy = strategyClassName;
+		return this;
     }
 
     public DriveList drives() {
@@ -114,7 +120,11 @@ public without sharing class GoogleDrive {
 
         public GoogleRetrieveFileFactory retrieve() {
             return new GoogleRetrieveFileFactory(googleDriveInstance);
-        } 
+        }
+
+		public GoogleModifyFileFactory modify() {
+            return new GoogleModifyFileFactory(googleDriveInstance);
+        }
 
         public GoogleCloneFileBuilder clone(String fileId) {
             return new GoogleCloneFileBuilder(

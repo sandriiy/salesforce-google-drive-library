@@ -52,6 +52,8 @@ Through this instance, you gain access to three main categories: `files`, `drive
 - **.files()**
   - **.search()** – `GoogleFileSearchBuilder`
   - **.search(String nextPageToken)** – `GoogleFileSearchBuilder`
+  - **.modify()** – `GoogleModifyFileFactory`
+    - **.metadata()** – `GoogleModifyMetadataFileBuilder`
   - **.simpleCreate()** – `GoogleSimpleFileBuilder`
   - **.multipartCreate()** – `GoogleMultipartFileBuilder`
   - **.resumableCreate()** – `GoogleResumableFileBuilder`

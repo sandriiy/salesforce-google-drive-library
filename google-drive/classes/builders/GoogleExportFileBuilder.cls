@@ -37,7 +37,7 @@ public class GoogleExportFileBuilder {
             contentFileEntity.bodyAsBlob = exportResponse.getBodyAsBlob();
             return contentFileEntity;
         } else {
-            throw new GoogleCloudException(exportResponse.getBody());
+			throw this.requestGoogleBuilder.error(exportResponse.getBody());
         }
     }
 }

@@ -87,6 +87,18 @@ public class GoogleRequestBuilder {
         return http.send(req);
     }
 
+	public GoogleCloudException error(String message) {
+		GoogleCloudException newException = new GoogleCloudException(message);
+		newException.endpoint = this.endpoint;
+		newException.httpHeaders = this.headers;
+		newException.httpParameters = this.parameters;
+
+		// Invoke the configured failure strategy, if any.
+		this.buildFailureStrategy(newException);
+
+		return newException;
+	}
+
     private void buildEndpointUrl(HttpRequest req) {
         List<String> parameterKeys = new List<String>(this.parameters.keySet());
         for (Integer i = 0; i < parameterKeys.size(); i++) {
@@ -126,4 +138,13 @@ public class GoogleRequestBuilder {
             req.setBodyAsBlob(this.bodyAsBlob);
         }
     }
+
+	private void buildFailureStrategy(GoogleCloudException newException) {
+		String failureStrategyClassName = this.googleDriveInstance.failureStrategy;
+		if (String.isBlank(failureStrategyClassName)) return;
+		
+		Type strategyType = Type.forName(failureStrategyClassName);
+		GoogleFailureStrategy strategyInstance = (GoogleFailureStrategy) strategyType.newInstance();
+		strategyInstance.onFailure(newException);
+	}
 }

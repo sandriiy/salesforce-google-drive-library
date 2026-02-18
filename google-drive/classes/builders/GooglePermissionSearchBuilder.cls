@@ -42,7 +42,7 @@ public with sharing class GooglePermissionSearchBuilder {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(searchResponse.getStatusCode())) {
             return (GooglePermissionSearchResult) JSON.deserialize(searchResponse.getBody(), GooglePermissionSearchResult.class);
         } else {
-            throw new GoogleCloudException(searchResponse.getBody());
+			throw this.requestGoogleBuilder.error(searchResponse.getBody());
         }
     }
 }

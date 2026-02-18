@@ -64,7 +64,7 @@ public class GoogleDownloadFileBuilder {
                 return contentFileEntity;
             }
         } else {
-            throw new GoogleCloudException(downloadResponse.getBody());
+			throw this.requestGoogleBuilder.error(downloadResponse.getBody());
         }
     }
 }

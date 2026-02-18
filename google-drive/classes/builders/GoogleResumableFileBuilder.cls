@@ -68,6 +68,11 @@ public with sharing class GoogleResumableFileBuilder {
         return this;
     }
 
+	public GoogleResumableFileBuilder setCustomAttributes(Map<String, Object> values) {
+        this.fileMetadataBuilder.setFileProperty('appProperties', values);
+        return this;
+    }
+
     public GoogleResumableFileBuilder setBody(Blob bodyPart) {
         this.bodyChunk = bodyPart;
         return this;
@@ -131,7 +136,7 @@ public with sharing class GoogleResumableFileBuilder {
             initializedBigFile.resumableLatestByte = GoogleConstants.UPLOAD_DEFAULT_INITIAL_BYTE;
             return initializedBigFile;
         } else {
-            throw new GoogleCloudException(uploadResponse.getBody());
+			throw this.requestGoogleBuilder.error(uploadResponse.getBody());
         }
     }
 
@@ -139,7 +144,7 @@ public with sharing class GoogleResumableFileBuilder {
         if (GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(uploadResponse.getStatusCode())) {
             return (GoogleFileEntity) JSON.deserialize(uploadResponse.getBody(), GoogleFileEntity.class);
         } else {
-            throw new GoogleCloudException(uploadResponse.getBody());
+			throw this.requestGoogleBuilder.error(uploadResponse.getBody());
         }
     }
 

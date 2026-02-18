@@ -22,7 +22,7 @@ public class GoogleTrashFileBuilder {
 
     private void validateTrashingPermissionRequest(HTTPResponse trashResponse) {
         if (!GoogleConstants.HTTP_SUCCESS_STATUS_CODES.contains(trashResponse.getStatusCode())) {
-            throw new GoogleCloudException(trashResponse.getBody());
+			throw this.requestGoogleBuilder.error(trashResponse.getBody());
         }
     }
 

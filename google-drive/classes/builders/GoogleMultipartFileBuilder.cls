@@ -57,6 +57,17 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
         return this;
     }
 
+    public GoogleMultipartFileBuilder setShortcutTarget(String targetId) {
+        this.fileMetadataBuilder.setFileProperty(
+            'shortcutDetails',
+            new Map<String, Object>{
+                'targetId' => targetId
+            }
+        );
+
+        return this;
+    }
+
     public GoogleMultipartFileBuilder setBody(String contentType, String transferEncoding, String body) {
         this.dataContentType = contentType;
         this.dataTransferEncoding = transferEncoding;
@@ -97,22 +108,35 @@ public class GoogleMultipartFileBuilder implements GoogleFileCreator {
     }
 
     private String buildMultipartRequestBody() {
-        return String.format(
+        String multipartRequestBody = String.format(
             '--{0}\r\n' +
             'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-            '{1}\r\n' +
-            '--{0}\r\n' +
-            'Content-Type: {2}\r\n' +
-            'Content-Transfer-Encoding: {3}\r\n\r\n' +
-            '{4}\r\n' +
-            '--{0}--',
+            '{1}\r\n',
             new List<String>{
                 GoogleConstants.MULTIPART_REQUEST_BOUNDARY,
-                this.fileMetadataBuilder.build(),
-                this.dataContentType,
-                this.dataTransferEncoding,
-                this.dataContentBody
+                this.fileMetadataBuilder.build()
             }
         );
+
+        if (this.hasBodyContent()) {
+            multipartRequestBody += String.format(
+                '--{0}\r\n' +
+                'Content-Type: {1}\r\n' +
+                'Content-Transfer-Encoding: {2}\r\n\r\n' +
+                '{3}\r\n',
+                new List<String>{
+                    GoogleConstants.MULTIPART_REQUEST_BOUNDARY,
+                    this.dataContentType,
+                    this.dataTransferEncoding,
+                    this.dataContentBody
+                }
+            );
+        }
+
+        return multipartRequestBody + '--' + GoogleConstants.MULTIPART_REQUEST_BOUNDARY + '--';
+    }
+
+    private Boolean hasBodyContent() {
+        return this.dataContentBody != null && this.dataContentBody.length() > 0;
     }
 }

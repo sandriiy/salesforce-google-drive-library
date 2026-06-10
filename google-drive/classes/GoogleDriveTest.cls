@@ -411,6 +411,36 @@ private class GoogleDriveTest {
     }
 
     @isTest
+    private static void testMultipartShortcutUpload() {
+        String shortcutTargetId = '1TLCWgrczvSFnnJpU-6OEEEXMy77OVLjM';
+        String successMultipartFileUpload = '{"id": "1ZdR3cU-rXTxY3g8B9yJH9kR7A4kx0gk9","name": "My Shortcut","mimeType": "application/vnd.google-apps.shortcut","shortcutDetails": {"targetId": "' + shortcutTargetId + '","targetMimeType": "application/vnd.google-apps.folder"}}';
+
+        GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(
+            GoogleConstants.UPLOAD_FILES_ENDPOINT,
+            200,
+            successMultipartFileUpload
+        );
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, testCalloutMock);
+        buildGoogleDriveInfo();
+
+        GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
+        GoogleFileEntity result = testGoogleDrive.files().multipartCreate()
+            .setFileName('Shortcut Upload')
+            .setMimeType('application/vnd.google-apps.shortcut')
+            .setFields('id, name, mimeType, shortcutDetails')
+            .setShortcutTarget(shortcutTargetId)
+            .execute();
+
+        Assert.isNotNull(result.id);
+        Assert.areEqual('application/vnd.google-apps.shortcut', result.mimeType);
+        Assert.isNotNull(result.shortcutDetails);
+        Assert.areEqual(shortcutTargetId, result.shortcutDetails.targetId);
+        Test.stopTest();
+    }
+
+    @isTest
     private static void testMultipartFileUploadFail() {
         String failedMultipartFileUpload = '{"error": {"errors": [{"domain": "global","reason": "authError","message": "Invalid Credentials","locationType": "header","location": "Authorization"}],"code": 401,"message": "Invalid Credentials"}}';
         GoogleDriveHttpMockGenerator testCalloutMock = new GoogleDriveHttpMockGenerator(

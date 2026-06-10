@@ -4,16 +4,16 @@
       "path": "google-drive",
       "default": true,
       "package": "apex-google-drive",
-      "versionName": "Version 1.2.3",
-      "versionNumber": "1.2.3.NEXT",
-      "versionDescription": "Added a new error-handling mechanism, a new builder for updating file metadata, and support for organization-specific custom attributes.",
+      "versionName": "Version 1.2.4",
+      "versionNumber": "1.2.4.NEXT",
+      "versionDescription": "Added support for creating shortcuts via multipart upload, updated API versions, and improved test coverage.",
       "releaseNotesUrl": "https://github.com/sandriiy/salesforce-google-drive-library/releases"
     }
   ],
   "name": "google-drive-library",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "64.0",
+  "sourceApiVersion": "66.0",
   "packageAliases": {
     "apex-google-drive": "0HoJ8000000TN1yKAG",
     "apex-google-drive@1.0.0-1": "04tJ80000000RfaIAE",
@@ -22,6 +22,7 @@
     "apex-google-drive@1.2.0-1": "04tJ80000011MDEIA2",
     "apex-google-drive@1.2.1-1": "04tJ80000011MDOIA2",
     "apex-google-drive@1.2.2-1": "04tJ80000011MDdIAM",
-    "apex-google-drive@1.2.3-1": "04tJ80000011MFtIAM"
+    "apex-google-drive@1.2.3-1": "04tJ80000011MFtIAM",
+    "apex-google-drive@1.2.4-1": "04tQy000000W2OTIA0"
   }
 }

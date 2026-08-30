@@ -93,40 +93,6 @@ Through this instance, you gain access to six main categories: `files`, `drives`
 - **.operations()**
   - **.retrieve(String operationName)** – `GoogleRetrieveOperationBuilder`
 
-### Choosing an access scope
-
-An authorizer implementing `GoogleAuthorizer` is asked for a token with no idea what it is about to be used for, which is why most implementations end up requesting the full `drive` scope for everything. Declare the scopes up front instead, and implement `GoogleScopedAuthorizer` to receive them:
-
-```apex
-GoogleCredential credential = new GoogleAuthorizationCodeFlow.Builder()
-    .setLocalGoogleAuthorizer('MyDriveAuthorizer')
-    .setRequestedScopes(new List<GoogleScope>{ GoogleScope.DRIVE_FILE })
-    .setLocalPlatformCache(partition, 'gdrive_token')
-    .build();
-
-public class MyDriveAuthorizer implements GoogleScopedAuthorizer {
-    public String retrieveAccessToken(List<GoogleScope> requestedScopes) {
-        String scopes = GoogleScopeResolver.toScopeUrls(requestedScopes);
-        // ... exchange for a token carrying exactly those scopes
-    }
-}
-```
-
-The declared scopes also take part in the Platform Cache key, so a token cached for one set is never handed to an operation that asked for another. An authorizer that only implements `GoogleAuthorizer` keeps working exactly as before.
-
-Google sorts its scopes into three tiers, and the tier decides what shipping costs you. Prefer the narrowest one that does the job.
-
-| Scope | Tier | Enough for |
-| --- | --- | --- |
-| `DRIVE_FILE` | Non-sensitive | Files your app created or the user opened with it. The recommended default. |
-| `DRIVE_APPDATA` | Non-sensitive | Your app's own hidden configuration folder. |
-| `DRIVE_METADATA_READONLY` | Restricted | Search, listing and folder navigation, with no file content. |
-| `DRIVE_READONLY` | Restricted | Reading and downloading every file. |
-| `DRIVE_METADATA` | Restricted | Reading and writing metadata, with no file content. |
-| `DRIVE` | Restricted | Everything. Only when nothing narrower will do. |
-
-Restricted scopes require OAuth app verification and an annual third-party security assessment, so reaching for `DRIVE` by default is rarely free. The full list, with what each one grants, is documented on `GoogleScope`.
-
 ## <span id="info">Acknowledgments</span>
 
 * https://github.com/sandriiy/salesforce-google-drive-library/wiki

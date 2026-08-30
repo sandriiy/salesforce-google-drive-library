@@ -47,29 +47,85 @@ To begin using this library, you first need to set up the Google Drive integrati
 
 Once the setup is complete, the entry point is to instantiate the `GoogleDrive` class, which provides all builders, factories, and methods for interacting with the Google Drive API in an object-oriented manner. Detailed instructions for creating this instance are available on the <a href="https://github.com/sandriiy/salesforce-google-drive-library/wiki/Library-Authorization-Flow">Library Authorization Flow page</a>
 
-Through this instance, you gain access to three main categories: `files`, `drives`, and `permissions`. Each category exposes a dedicated set of operations. The full hierarchy of available methods is shown below.
+Through this instance, you gain access to six main categories: `files`, `drives`, `permissions`, `revisions`, `labels` and `operations`. Each category exposes a dedicated set of operations. The full hierarchy of available methods is shown below.
 
 - **.files()**
   - **.search()** – `GoogleFileSearchBuilder`
   - **.search(String nextPageToken)** – `GoogleFileSearchBuilder`
   - **.modify()** – `GoogleModifyFileFactory`
-    - **.metadata()** – `GoogleModifyMetadataFileBuilder`
+    - **.metadata(String fileId)** – `GoogleModifyMetadataFileBuilder`
+    - **.simpleUpdate(String fileId)** – `GoogleSimpleFileBuilder`
+    - **.multipartUpdate(String fileId)** – `GoogleMultipartFileBuilder`
+    - **.resumableUpdate(String fileId)** – `GoogleResumableFileBuilder`
   - **.simpleCreate()** – `GoogleSimpleFileBuilder`
   - **.multipartCreate()** – `GoogleMultipartFileBuilder`
   - **.resumableCreate()** – `GoogleResumableFileBuilder`
   - **.retrieve()** – `GoogleRetrieveFileFactory`
-    - **.download()** – `GoogleDownloadFileBuilder`
-    - **.export()** – `GoogleExportFileBuilder`
+    - **.download(String fileId)** – `GoogleDownloadFileBuilder`
+    - **.export(String fileId)** – `GoogleExportFileBuilder`
+    - **.downloadLink(String fileId)** – `GoogleAsyncDownloadFileBuilder`
   - **.clone(String fileId)** – `GoogleCloneFileBuilder`
   - **.remove(String fileId)** – `GoogleDeleteFileBuilder`
   - **.trash(String fileId)** – `GoogleTrashFileBuilder`
 - **.drives()**
   - **.search()** – `GoogleDriveSearchBuilder`
   - **.search(String nextPageToken)** – `GoogleDriveSearchBuilder`
+  - **.create()** – `GoogleCreateDriveBuilder`
+  - **.retrieve(String driveId)** – `GoogleRetrieveDriveBuilder`
+  - **.modify(String driveId)** – `GoogleModifyDriveBuilder`
+  - **.remove(String driveId)** – `GoogleDeleteDriveBuilder`
+  - **.hide(String driveId)** – `GoogleHideDriveBuilder`
+  - **.unhide(String driveId)** – `GoogleUnhideDriveBuilder`
 - **.permissions()**
   - **.create(String fileId)** – `GoogleCreatePermissionFileBuilder`
+  - **.retrieve(String fileId, String permissionId)** – `GoogleRetrievePermissionFileBuilder`
+  - **.modify(String fileId, String permissionId)** – `GoogleModifyPermissionFileBuilder`
   - **.remove(String fileId, String permissionId)** – `GoogleDeletePermissionFileBuilder`
   - **.search(String fileId)** – `GooglePermissionSearchBuilder`
+- **.revisions()**
+  - **.search(String fileId)** – `GoogleRevisionSearchBuilder`
+  - **.retrieve(String fileId, String revisionId)** – `GoogleRetrieveRevisionBuilder`
+  - **.modify(String fileId, String revisionId)** – `GoogleModifyRevisionBuilder`
+  - **.remove(String fileId, String revisionId)** – `GoogleDeleteRevisionBuilder`
+- **.labels()**
+  - **.search(String fileId)** – `GoogleLabelSearchBuilder`
+  - **.modify(String fileId)** – `GoogleModifyLabelsFileBuilder`
+- **.operations()**
+  - **.retrieve(String operationName)** – `GoogleRetrieveOperationBuilder`
+
+### Choosing an access scope
+
+An authorizer implementing `GoogleAuthorizer` is asked for a token with no idea what it is about to be used for, which is why most implementations end up requesting the full `drive` scope for everything. Declare the scopes up front instead, and implement `GoogleScopedAuthorizer` to receive them:
+
+```apex
+GoogleCredential credential = new GoogleAuthorizationCodeFlow.Builder()
+    .setLocalGoogleAuthorizer('MyDriveAuthorizer')
+    .setRequestedScopes(new List<GoogleScope>{ GoogleScope.DRIVE_FILE })
+    .setLocalPlatformCache(partition, 'gdrive_token')
+    .build();
+
+public class MyDriveAuthorizer implements GoogleScopedAuthorizer {
+    public String retrieveAccessToken(List<GoogleScope> requestedScopes) {
+        String scopes = GoogleScopeResolver.toScopeUrls(requestedScopes);
+        // ... exchange for a token carrying exactly those scopes
+    }
+}
+```
+
+The declared scopes also take part in the Platform Cache key, so a token cached for one set is never handed to an operation that asked for another. An authorizer that only implements `GoogleAuthorizer` keeps working exactly as before.
+
+Google sorts its scopes into three tiers, and the tier decides what shipping costs you. Prefer the narrowest one that does the job.
+
+| Scope | Tier | Enough for |
+| --- | --- | --- |
+| `DRIVE_FILE` | Non-sensitive | Files your app created or the user opened with it. The recommended default. |
+| `DRIVE_APPDATA` | Non-sensitive | Your app's own hidden configuration folder. |
+| `DRIVE_METADATA_READONLY` | Restricted | Search, listing and folder navigation, with no file content. |
+| `DRIVE_READONLY` | Restricted | Reading and downloading every file. |
+| `DRIVE_METADATA` | Restricted | Reading and writing metadata, with no file content. |
+| `DRIVE` | Restricted | Everything. Only when nothing narrower will do. |
+
+Restricted scopes require OAuth app verification and an annual third-party security assessment, so reaching for `DRIVE` by default is rarely free. The full list, with what each one grants, is documented on `GoogleScope`.
 
 ## <span id="info">Acknowledgments</span>
 

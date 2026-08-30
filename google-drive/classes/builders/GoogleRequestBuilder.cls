@@ -1,3 +1,27 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2024-2026 Andrii Sukhetskyi
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 public class GoogleRequestBuilder {
     private GoogleDrive googleDriveInstance;
 
@@ -117,11 +141,21 @@ public class GoogleRequestBuilder {
 
     private void buildEndpointHeaders(HttpRequest req) {
         for (String headerKey : this.headers.keySet()) {
+            if (this.isRejectedContentLengthHeader(headerKey)) continue;
+
             String headerParameter = this.headers.get(headerKey);
             req.setHeader(headerKey, headerParameter);
         }
 
         this.buildAuthorizationHeader(req);
+    }
+
+    /**
+     * Salesforce throws a CalloutException when Content-Length is set by hand on a PATCH
+     * callout, and works the value out on its own, so the header is dropped.
+    */
+    private Boolean isRejectedContentLengthHeader(String headerKey) {
+        return 'PATCH'.equalsIgnoreCase(this.method) && 'Content-Length'.equalsIgnoreCase(headerKey);
     }
 
     private void buildAuthorizationHeader(HttpRequest req) {

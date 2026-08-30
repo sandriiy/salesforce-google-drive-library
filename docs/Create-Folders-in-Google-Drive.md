@@ -12,7 +12,7 @@ The example below creates a new folder by:
 
 Other attributes are optional.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity createdFolder = testGoogleDrive.files().multipartCreate()
     .setFileName(entityName)

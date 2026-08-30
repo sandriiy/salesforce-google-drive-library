@@ -22,7 +22,7 @@ Lists the revisions of a file using the [revisions.list](https://developers.goog
 
 **Returned fields:** nextPageToken, kind, revisions (List\<GoogleRevisionEntity\>)
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleRevisionSearchResult result = testGoogleDrive.revisions().search(testFileId)
     .setMaxResult(100)
@@ -42,7 +42,7 @@ Reads one revision through the [revisions.get](https://developers.google.com/wor
 
 **Return Type:** GoogleRevisionEntity
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleRevisionEntity metadata = testGoogleDrive.revisions().retrieve(testFileId, testRevisionId)
     .setRevisionDownloadType(GoogleRetrieveRevisionBuilder.DownloadType.METADATA)
@@ -52,7 +52,7 @@ GoogleRevisionEntity metadata = testGoogleDrive.revisions().retrieve(testFileId,
 
 To read the content of that revision instead, switch the download type. The bytes arrive in `bodyAsBlob`, and the text form in `body`, which mirrors how `files().retrieve().download(...)` behaves.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleRevisionEntity content = testGoogleDrive.revisions().retrieve(testFileId, testRevisionId)
     .setRevisionDownloadType(GoogleRetrieveRevisionBuilder.DownloadType.CONTENT)
@@ -70,7 +70,7 @@ Updates a revision through the [revisions.update](https://developers.google.com/
 
 **Return Type:** GoogleRevisionEntity
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleRevisionEntity pinned = testGoogleDrive.revisions().modify(testFileId, testRevisionId)
     .setKeepForever(true)
@@ -87,7 +87,7 @@ A revision has no name of its own. `originalFilename` is set by Drive from the u
 
 Permanently removes one revision using the [revisions.delete](https://developers.google.com/workspace/drive/api/reference/rest/v3/revisions/delete) method. The operation returns nothing; if it fails, an exception is thrown.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 testGoogleDrive.revisions().remove(testFileId, testRevisionId).execute();
 ```
@@ -98,7 +98,7 @@ This is irreversible, and Drive protects you from the two cases that would leave
 
 The Google Drive API has no "revert" endpoint. Restoring an earlier version is done by reading that revision's content and uploading it back as a new version, which is also what the Drive web interface does behind its **Restore this version** button. The file keeps its ID, and the version you restored from stays in the history.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 
 // 1. Read the content of the revision you want to go back to
@@ -132,7 +132,7 @@ Google Docs, Sheets and Slides keep a revision history, but Drive restricts what
 
 The practical consequence is that [Restore an Earlier Version](#restore-version) works for binary files but not for Docs Editors files: their revision content is only reachable through the `exportLinks` returned by `retrieve`, and the library has no builder that fetches an arbitrary export URL.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleRevisionEntity docRevision = testGoogleDrive.revisions().retrieve(testFileId, testRevisionId)
     .setFields('id, mimeType, exportLinks')

@@ -47,29 +47,51 @@ To begin using this library, you first need to set up the Google Drive integrati
 
 Once the setup is complete, the entry point is to instantiate the `GoogleDrive` class, which provides all builders, factories, and methods for interacting with the Google Drive API in an object-oriented manner. Detailed instructions for creating this instance are available on the <a href="https://github.com/sandriiy/salesforce-google-drive-library/wiki/Library-Authorization-Flow">Library Authorization Flow page</a>
 
-Through this instance, you gain access to three main categories: `files`, `drives`, and `permissions`. Each category exposes a dedicated set of operations. The full hierarchy of available methods is shown below.
+Through this instance, you gain access to six main categories: `files`, `drives`, `permissions`, `revisions`, `labels` and `operations`. Each category exposes a dedicated set of operations. The full hierarchy of available methods is shown below.
 
 - **.files()**
   - **.search()** – `GoogleFileSearchBuilder`
   - **.search(String nextPageToken)** – `GoogleFileSearchBuilder`
   - **.modify()** – `GoogleModifyFileFactory`
-    - **.metadata()** – `GoogleModifyMetadataFileBuilder`
+    - **.metadata(String fileId)** – `GoogleModifyMetadataFileBuilder`
+    - **.simpleUpdate(String fileId)** – `GoogleSimpleFileBuilder`
+    - **.multipartUpdate(String fileId)** – `GoogleMultipartFileBuilder`
+    - **.resumableUpdate(String fileId)** – `GoogleResumableFileBuilder`
   - **.simpleCreate()** – `GoogleSimpleFileBuilder`
   - **.multipartCreate()** – `GoogleMultipartFileBuilder`
   - **.resumableCreate()** – `GoogleResumableFileBuilder`
   - **.retrieve()** – `GoogleRetrieveFileFactory`
-    - **.download()** – `GoogleDownloadFileBuilder`
-    - **.export()** – `GoogleExportFileBuilder`
+    - **.download(String fileId)** – `GoogleDownloadFileBuilder`
+    - **.export(String fileId)** – `GoogleExportFileBuilder`
+    - **.downloadLink(String fileId)** – `GoogleAsyncDownloadFileBuilder`
   - **.clone(String fileId)** – `GoogleCloneFileBuilder`
   - **.remove(String fileId)** – `GoogleDeleteFileBuilder`
   - **.trash(String fileId)** – `GoogleTrashFileBuilder`
 - **.drives()**
   - **.search()** – `GoogleDriveSearchBuilder`
   - **.search(String nextPageToken)** – `GoogleDriveSearchBuilder`
+  - **.create()** – `GoogleCreateDriveBuilder`
+  - **.retrieve(String driveId)** – `GoogleRetrieveDriveBuilder`
+  - **.modify(String driveId)** – `GoogleModifyDriveBuilder`
+  - **.remove(String driveId)** – `GoogleDeleteDriveBuilder`
+  - **.hide(String driveId)** – `GoogleHideDriveBuilder`
+  - **.unhide(String driveId)** – `GoogleUnhideDriveBuilder`
 - **.permissions()**
   - **.create(String fileId)** – `GoogleCreatePermissionFileBuilder`
+  - **.retrieve(String fileId, String permissionId)** – `GoogleRetrievePermissionFileBuilder`
+  - **.modify(String fileId, String permissionId)** – `GoogleModifyPermissionFileBuilder`
   - **.remove(String fileId, String permissionId)** – `GoogleDeletePermissionFileBuilder`
   - **.search(String fileId)** – `GooglePermissionSearchBuilder`
+- **.revisions()**
+  - **.search(String fileId)** – `GoogleRevisionSearchBuilder`
+  - **.retrieve(String fileId, String revisionId)** – `GoogleRetrieveRevisionBuilder`
+  - **.modify(String fileId, String revisionId)** – `GoogleModifyRevisionBuilder`
+  - **.remove(String fileId, String revisionId)** – `GoogleDeleteRevisionBuilder`
+- **.labels()**
+  - **.search(String fileId)** – `GoogleLabelSearchBuilder`
+  - **.modify(String fileId)** – `GoogleModifyLabelsFileBuilder`
+- **.operations()**
+  - **.retrieve(String operationName)** – `GoogleRetrieveOperationBuilder`
 
 ## <span id="info">Acknowledgments</span>
 

@@ -1,0 +1,71 @@
+# Mirrors docs/ into the GitHub Wiki.
+name: Publish Wiki
+
+on:
+  push:
+    branches:
+      - production
+    paths:
+      - 'docs/**'
+      - '.github/workflows/publish-wiki.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Two publishes at once would race each other over the same wiki repository.
+concurrency:
+  group: publish-wiki
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish docs/ to the wiki
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Check out the wiki
+        uses: actions/checkout@v4
+        with:
+          # The wiki is a separate git repository, at <repo>.wiki.git. It must
+          # already have at least one page, otherwise it does not exist to clone.
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+          token: ${{ secrets.WIKI_TOKEN || github.token }}
+
+      - name: Copy the documentation into the wiki
+        run: |
+          set -euo pipefail
+
+          if [ ! -d docs ] || [ -z "$(ls -A docs/*.md 2>/dev/null)" ]; then
+            echo "::error::docs/ holds no Markdown pages, refusing to empty the wiki."
+            exit 1
+          fi
+
+          # Everything but .git goes, so a page deleted from docs/ leaves the wiki too.
+          find wiki -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          cp docs/*.md wiki/
+
+          echo "Pages staged for publication:"
+          ls -1 wiki/*.md
+
+      - name: Commit and push
+        working-directory: wiki
+        run: |
+          set -euo pipefail
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+
+          if git diff --cached --quiet; then
+            echo "The wiki already matches docs/, nothing to publish."
+            exit 0
+          fi
+
+          git commit -m "Publish wiki from ${GITHUB_SHA:0:7}"
+          git push
+          echo "Wiki updated from ${GITHUB_SHA:0:7}."

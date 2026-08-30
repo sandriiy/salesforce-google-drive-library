@@ -4,9 +4,9 @@
       "path": "google-drive",
       "default": true,
       "package": "apex-google-drive",
-      "versionName": "Version 1.2.4",
-      "versionNumber": "1.2.4.NEXT",
-      "versionDescription": "Added support for creating shortcuts via multipart upload, updated API versions, and improved test coverage.",
+      "versionName": "Version 1.3.0",
+      "versionNumber": "1.3.0.NEXT",
+      "versionDescription": "Added support for uploading new file versions, revisions and labels, full shared drive and permission management, scoped access tokens, and download links for large files.",
       "releaseNotesUrl": "https://github.com/sandriiy/salesforce-google-drive-library/releases"
     }
   ],
@@ -23,6 +23,7 @@
     "apex-google-drive@1.2.1-1": "04tJ80000011MDOIA2",
     "apex-google-drive@1.2.2-1": "04tJ80000011MDdIAM",
     "apex-google-drive@1.2.3-1": "04tJ80000011MFtIAM",
-    "apex-google-drive@1.2.4-1": "04tQy000000W2OTIA0"
+    "apex-google-drive@1.2.4-1": "04tQy000000W2OTIA0",
+    "apex-google-drive@1.3.0-1": "04tQy000000ZFIjIAO"
   }
 }

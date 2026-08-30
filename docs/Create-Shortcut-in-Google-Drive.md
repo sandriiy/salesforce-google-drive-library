@@ -14,7 +14,7 @@ The example below creates a new shortcut by:
 
 Other attributes are optional.
 
-```
+```java
 GoogleDrive remoteGoogleDrive = new GoogleClientApiProvider().retrieveGoogleDriveClient();
 
 GoogleFileEntity createdShortcut = remoteGoogleDrive.files().multipartCreate()

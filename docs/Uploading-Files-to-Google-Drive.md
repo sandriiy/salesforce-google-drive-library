@@ -4,7 +4,7 @@ The Google Drive API supports file uploads [through three approaches](https://de
 
 The Salesforce Apex Google Drive library supports all upload methods and offers a comprehensive set of tools and builders for seamless file uploads of varying sizes. For instance, below is an example of the [Simple Method](#simple-upload), designed for uploading media files without specifying metadata:
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity result = testGoogleDrive.files().simpleCreate()
     .setBody(Blob.valueOf('Hello World'))
@@ -18,7 +18,7 @@ In the above upload scenario, the result of the execution is an instance of the 
 
 ## <span id="simple-upload">Simple Upload</span>
 Use this upload type to transfer a small media file (5 MB or less) without supplying metadata. Click [here](https://developers.google.com/drive/api/guides/manage-uploads#simple) for the reference documentation.
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity result = testGoogleDrive.files().simpleCreate()
     .setContentType('text/plain')
@@ -28,7 +28,7 @@ GoogleFileEntity result = testGoogleDrive.files().simpleCreate()
     .execute();
 ```
 This upload method does not support specifying metadata (such as parent folders, name, conversion type, etc.) and allows only basic parameters, such as the uploaded document's type and its size in bytes. Furthermore, these fields are not required; the only mandatory field for this upload method is `setBody`, and while specifying them is recommended, the code presented below will work just fine:
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity result = testGoogleDrive.files().simpleCreate()
     .setBody(Blob.valueOf('Hello World'))
@@ -39,7 +39,7 @@ Additionally, special attention should be given to the `setFields` method, which
 ## <span id="multipart-upload">Multipart Upload</span>
 
 Use this upload type to transfer a small file (5 MB or less) along with metadata that describes the file, in a single request. Click [here](https://developers.google.com/drive/api/guides/manage-uploads#multipart) for the reference documentation.
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity result = testGoogleDrive.files().multipartCreate()
     .setFileName('Multipart Upload')
@@ -51,7 +51,7 @@ GoogleFileEntity result = testGoogleDrive.files().multipartCreate()
 In the example above, we upload a file to two specific folders defined by method `setParentFolders`. During the upload, we also convert the file to the Google Document format (assuming the original format was Microsoft Word) using the `setMimeType` method. Additionally, we specify the file name and its content.
 
 When using this upload method, special attention should be given to the document body, as it can either be a media file or not. By default, the library only accepts a **base64** encoded string. To change the standard encoding, you can use the same `setBody` method, but with its variation that accepts three parameters. As shown below, we specify the MIME type (content type) as text/plain, set the encoding to 8bit, and provide an unencoded string. In this case, everything will work as expected:
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity result = testGoogleDrive.files().multipartCreate()
     .setContentLength(11)
@@ -72,7 +72,7 @@ Use this upload type for large files (greater than 5 MB) that you can upload in 
 ### Upload Initialization
 You request a Uniform Resource Identifier (URI), valid for one week, which you will use to upload the file in chunks. Initialization also involves specifying metadata, as the chunked upload requires only the document body and byte count.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleBigFileEntity initResult = testGoogleDrive.files().resumableCreate()
     .setFields('*')
@@ -87,7 +87,7 @@ Unlike the previous two methods, in this case, the returned class instance is of
 ### Chunk Upload
 You upload the large file in chunks, specifying the starting byte for each chunk and total file bytes. While determining the total bytes is straightforward by simply getting the size of the Blob, the starting byte requires more attention. The library will return the byte from which to start the next chunk after each upload. Note that this step often requires the use of UI elements, as splitting a large Blob in Apex is not possible.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleBigFileEntity chunksResult = testGoogleDrive.files().resumableCreate()
     .setExistingSessionUri(initResult.resumableSessionId)
@@ -104,7 +104,7 @@ Additionally, keep in mind that even if we specify the chunk size as 0 to 20,000
 ### Final Chunk
 Once the last chunk is uploaded, as described above, Google Drive returns a file instance with the fields you specified during initialization (using the `setFields` method), or with the default fields if no additional fields were specified.
 
-```
+```java
 GoogleBigFileEntity chunksResult = testGoogleDrive.files().resumableCreate()
     .setExistingSessionUri(initResult.resumableSessionId)
     .setBody(secondFileChunk)
@@ -114,6 +114,6 @@ GoogleBigFileEntity chunksResult = testGoogleDrive.files().resumableCreate()
 ```
 
 Although the result of the execution is a `GoogleBigFileEntity` again, for the last chunk, its `file` variable is populated with the actual file, which can now be used to retrieve the details of the uploaded file.
-```
+```java
 GoogleFileEntity resumableFileUploaded = chunksResult.file;
 ```

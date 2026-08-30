@@ -11,7 +11,7 @@ To update metadata, use the `modify()` entry point in the following form: `.file
 
 This returns a `GoogleModifyMetadataFileBuilder`, which exposes a fluent API for updating file properties.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity movedFile = testGoogleDrive.files().modify().metadata(remoteFileId)
     .addParentFolders(new List<String>{ destinationFolderId })
@@ -52,7 +52,7 @@ Versions are uploaded through the same three approaches used for creating files,
 
 ### Replace the content of a file
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity newVersion = testGoogleDrive.files().modify().simpleUpdate(remoteFileId)
     .setContentType('text/plain')
@@ -73,7 +73,7 @@ In the example above, the content of `remoteFileId` is replaced and a new revisi
 
 `multipartUpdate` accepts everything `multipartCreate` accepts, so a rename and a new body travel in a single request.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileEntity newVersion = testGoogleDrive.files().modify().multipartUpdate(remoteFileId)
     .setFileName('Quarterly Report (final)')
@@ -91,7 +91,7 @@ GoogleFileEntity newVersion = testGoogleDrive.files().modify().multipartUpdate(r
 
 `resumableUpdate` behaves exactly like `resumableCreate`: you call `initialize()` once to open a session, then send the chunks. The only difference is that the session is opened against the existing file, so the chunks land on it rather than creating a new one.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleBigFileEntity initResult = testGoogleDrive.files().modify().resumableUpdate(remoteFileId)
     .setMimeType('application/pdf')

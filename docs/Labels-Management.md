@@ -16,7 +16,7 @@ Returns every label currently applied to a file, together with the values held i
 
 **Returned fields:** nextPageToken, kind, labels (List\<GoogleLabelEntity\>)
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleLabelSearchResult result = testGoogleDrive.labels().search(testFileId)
     .setMaxResult(100)
@@ -60,7 +60,7 @@ Labels are changed through `labels().modify(fileId)`. Each individual change is 
 
 Applying a label and setting its field values is one operation, not two — the values travel with the label in the same call.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleModifyLabelsResult result = testGoogleDrive.labels().modify(testFileId)
     .addLabelModification(
@@ -83,7 +83,7 @@ In the example above, the label is attached to the file and its text field is po
 
 Each of these can be called more than once on the same builder, once per field, so a label with several fields is populated in one modification:
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleModifyLabelsResult result = testGoogleDrive.labels().modify(testFileId)
     .addLabelModification(
@@ -102,7 +102,7 @@ GoogleModifyLabelsResult result = testGoogleDrive.labels().modify(testFileId)
 
 Removing a label uses the same entry point, with `setRemoveLabel(true)` in place of any field values.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 testGoogleDrive.labels().modify(testFileId)
     .addLabelModification(
@@ -121,7 +121,7 @@ Removing a label clears its field values as well, so re-applying it later starts
 
 `addLabelModification(...)` may be called repeatedly, and Drive applies all of the changes in one request. This is the efficient way to reclassify a file, and it costs a single callout.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleModifyLabelsResult result = testGoogleDrive.labels().modify(testFileId)
     .addLabelModification(

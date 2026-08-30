@@ -118,11 +118,9 @@
   Use this option if you downloaded a JSON Service Account key. In this case, let's assume that the name of your JSON file is "service_account.json".
 </p>
 <h4>Step 1: Extract the private key from the JSON</h4>
-<p>
-
-`jq -r ".private_key" service_account.json | Set-Content -Path service_account_key.pem -Encoding utf8`
-
-</p>
+```powershell
+jq -r ".private_key" service_account.json | Set-Content -Path service_account_key.pem -Encoding utf8
+```
 <p>
   Manual alternative (if needed): Extract the private key from the `private_key` value in the JSON file and save it as a separate file with a .PEM extension. Then, format your key correctly by ensuring it has base64 encoding, a header, a footer, and lines split by 64 characters each. This step is crucial because an incorrectly formatted key can block further steps, so double-check that it is correct.
 
@@ -135,11 +133,9 @@
 </p>
 
 <h4>Step 2: Create a certificate signing request (CSR)</h4>
-<p>
-
-`openssl req -new -key service_account_key.pem -out service_account.csr`
-
-</p>
+```bash
+openssl req -new -key service_account_key.pem -out service_account.csr
+```
 <p>
   During the process, OpenSSL will ask you to enter details such as:
 
@@ -155,38 +151,30 @@ All other fields are optional, and you can skip them by simply pressing Enter.
 </p>
 
 <h4>Step 3: Create a self-signed certificate</h4>
-<p>
-
-`openssl x509 -req -days 365 -in service_account.csr -signkey service_account_key.pem -out service_account_cert.crt`
-
-</p>
+```bash
+openssl x509 -req -days 365 -in service_account.csr -signkey service_account_key.pem -out service_account_cert.crt
+```
 
 <h4>Step 4: Create a P12 bundle</h4>
-<p>
-
-`openssl pkcs12 -export -in service_account_cert.crt -inkey service_account_key.pem -out service_account.p12 -name "ServiceAccountName"`
-
-</p>
+```bash
+openssl pkcs12 -export -in service_account_cert.crt -inkey service_account_key.pem -out service_account.p12 -name "ServiceAccountName"
+```
 <p>
   You will be prompted to set an export password. Keep it safe; you will need it again.
 </p>
 
 <h4>Step 5: Convert P12 → JKS</h4>
-<p>
-
-`keytool -importkeystore -srckeystore service_account.p12 -srcstoretype PKCS12 -destkeystore service_account.jks -deststoretype JKS`
-
-</p>
+```bash
+keytool -importkeystore -srckeystore service_account.p12 -srcstoretype PKCS12 -destkeystore service_account.jks -deststoretype JKS
+```
 
 <h3 id="p12-key-to-jks">Option B: P12 Key → JKS</h3>
 <p>
   Use this option if you received a P12 key directly. Your default password received from Google will be "notasecret", use it for the JKS file too. In this case, let's assume that the name of your P12 file is "service_account.p12".
 </p>
-<p>
-
-`keytool -importkeystore -srckeystore service_account.p12 -srcstoretype PKCS12 -destkeystore service_account.jks -deststoretype JKS`
-
-</p>
+```bash
+keytool -importkeystore -srckeystore service_account.p12 -srcstoretype PKCS12 -destkeystore service_account.jks -deststoretype JKS
+```
 
 <h2 id="upload-certificate-to-salesforce">Upload Certificate to Salesforce</h2>
 <ol>
@@ -206,17 +194,15 @@ All other fields are optional, and you can skip them by simply pressing Enter.
 <p>
   Once the certificate is uploaded, you can generate and sign a JWT in Apex.
 </p>
-<p>
+```java
+Auth.JWT jwt = new Auth.JWT();
+jwt.setAud('https://oauth2.googleapis.com/token');
+jwt.setIss(SERVICE_ACCOUNT_EMAIL)
+jwt.setSub(SERVICE_ACCOUNT_EMAIL);
+jwt.setAdditionalClaims(new Map<String, Object>{'scope' => 'https://www.googleapis.com/auth/drive'});
 
-    Auth.JWT jwt = new Auth.JWT();
-    jwt.setAud('https://oauth2.googleapis.com/token');
-    jwt.setIss(SERVICE_ACCOUNT_EMAIL)
-    jwt.setSub(SERVICE_ACCOUNT_EMAIL);
-    jwt.setAdditionalClaims(new Map<String, Object>{'scope' => 'https://www.googleapis.com/auth/drive'});
-  
-    Auth.JWS jws = new Auth.JWS(jwt, CERTIFICATE_NAME);
-
-</p>
+Auth.JWS jws = new Auth.JWS(jwt, CERTIFICATE_NAME);
+```
 
 <p>
   Notes:
@@ -231,16 +217,14 @@ All other fields are optional, and you can skip them by simply pressing Enter.
   After signing the JWT, exchange it for an access token using the Auth namespace.
 </p>
 
-<p>
+```java
+Auth.JWTBearerTokenExchange bearer = new Auth.JWTBearerTokenExchange(
+    jwt.getAud(),
+    jws
+);
 
-    Auth.JWTBearerTokenExchange bearer = new Auth.JWTBearerTokenExchange(
-        jwt.getAud(),
-        jws
-    );
-  
-    return bearer.getAccessToken();
-
-</p>
+return bearer.getAccessToken();
+```
 <p>You have set up Google Drive integration. Now to start using the library with this access token, please refer <a href="#what-does-the-library-do">here</a></p>
 
 <h2 id="common-errors-notes">Common Errors &amp; Notes</h2>

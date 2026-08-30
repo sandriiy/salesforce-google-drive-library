@@ -23,7 +23,7 @@ Creates a shared drive using the [drives.create](https://developers.google.com/w
 
 **Returned fields:** id, name, colorRgb, kind, backgroundImageLink, capabilities, themeId, backgroundImageFile, createdTime, hidden, restrictions, orgUnitId
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleDriveEntity createdDrive = testGoogleDrive.drives().create()
     .setDriveName('Finance Documents')
@@ -47,7 +47,7 @@ Reads one shared drive's metadata using the [drives.get](https://developers.goog
 
 **Return Type:** GoogleDriveEntity
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleDriveEntity driveDetails = testGoogleDrive.drives().retrieve(testDriveId)
     .setFields('id, name, hidden, restrictions, capabilities')
@@ -64,7 +64,7 @@ Updates a shared drive through the [drives.update](https://developers.google.com
 
 **Return Type:** GoogleDriveEntity
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleDriveEntity updatedDrive = testGoogleDrive.drives().modify(testDriveId)
     .setDriveName('Finance Documents (Archive)')
@@ -75,7 +75,7 @@ GoogleDriveEntity updatedDrive = testGoogleDrive.drives().modify(testDriveId)
 
 Restrictions control how the drive behaves as a whole, and are passed as a map because Drive treats them as one nested object:
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleDriveEntity restrictedDrive = testGoogleDrive.drives().modify(testDriveId)
     .setRestrictions(new Map<String, Object>{
@@ -98,7 +98,7 @@ Hiding removes a shared drive from the caller's default view. Nothing is deleted
 
 **Return Type:** GoogleDriveEntity
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 
 GoogleDriveEntity hiddenDrive = testGoogleDrive.drives().hide(testDriveId)
@@ -118,7 +118,7 @@ Permanently deletes a shared drive using the [drives.delete](https://developers.
 
 **The drive must be empty.** Drive refuses to delete a shared drive that still contains items, including trashed ones, so remove the contents first.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 testGoogleDrive.drives().remove(testDriveId).execute();
 ```
@@ -126,7 +126,7 @@ testGoogleDrive.drives().remove(testDriveId).execute();
 - **`setAllowItemDeletion(Boolean)`** deletes the drive together with everything inside it. It is only available to a domain administrator, and must be combined with `setDomainAdminAccess(true)`.
 - **`setDomainAdminAccess(Boolean)`** performs the deletion as a domain administrator.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 testGoogleDrive.drives().remove(testDriveId)
     .setDomainAdminAccess(true)
@@ -136,7 +136,7 @@ testGoogleDrive.drives().remove(testDriveId)
 
 To empty a drive yourself before deleting it, list its contents with a file search scoped to that drive, then trash or remove each item:
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GoogleFileSearchResult contents = testGoogleDrive.files().search()
     .setDriveId(testDriveId)
@@ -157,7 +157,7 @@ for (GoogleFileEntity oneFile : contents.files) {
 
 Membership of a shared drive is granted with the same permission operations used for files — pass the drive ID where a file ID would normally go. The roles that apply to a shared drive are `organizer`, `fileOrganizer`, `writer`, `commenter` and `reader`.
 
-```
+```java
 GoogleDrive testGoogleDrive = new GoogleDrive(testCredentials, userAgentName);
 GooglePermissionEntity membership = testGoogleDrive.permissions().create(testDriveId)
     .setSupportsAllDrives(true)

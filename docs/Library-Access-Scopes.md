@@ -13,7 +13,7 @@ The library therefore lets you declare, up front, what a credential is for. Your
 
 `GoogleScope` lists the scopes the Drive API understands, so you name them instead of pasting URLs:
 
-```
+```java
 GoogleScope.DRIVE_FILE
 GoogleScope.DRIVE_READONLY
 GoogleScope.DRIVE_METADATA_READONLY
@@ -42,7 +42,7 @@ The rule of thumb is to ask for the narrowest scope that does the job. For a Sal
 
 `GoogleScopedAuthorizer` is the scope-aware counterpart of `GoogleAuthorizer`. It is a separate interface, not an extension of the original, so implementing it is a choice rather than an obligation.
 
-```
+```java
 public with sharing class CustomScopedAuthorizer implements GoogleScopedAuthorizer {
     private final String SERVICE_ACCOUNT_EMAIL = 'YOUR_SERVICE_ACC_EMAIL';
     private final String CERTIFICATE_NAME = 'YOUR_CERTIFICATE_NAME';
@@ -72,7 +72,7 @@ The list handed to your class is never `null`. If the caller declared nothing, i
 
 Scopes are declared once, when the credential is built, using `setRequestedScopes(...)` on the `GoogleAuthorizationCodeFlow.Builder`:
 
-```
+```java
 GoogleCredential googleDriveCredentials = new GoogleAuthorizationCodeFlow.Builder()
     .setLocalGoogleAuthorizer('CustomScopedAuthorizer')
     .setRequestedScopes(new List<GoogleScope>{ GoogleScope.DRIVE_FILE })
@@ -90,7 +90,7 @@ A class that implements both is treated as scoped. This is why declaring scopes 
 
 Declare all of the scopes a credential will need, since one credential serves every call made through the `GoogleDrive` instance built from it:
 
-```
+```java
 GoogleCredential googleDriveCredentials = new GoogleAuthorizationCodeFlow.Builder()
     .setLocalGoogleAuthorizer('CustomScopedAuthorizer')
     .setRequestedScopes(new List<GoogleScope>{
@@ -106,7 +106,7 @@ Caching access tokens is described in [Library Authorization Flow](https://githu
 
 Declaring scopes fixes that. When — and only when — `setRequestedScopes(...)` is used, the library appends a short digest of the scope set to the cache key, so each set of scopes gets its own entry:
 
-```
+```java
 Cache.OrgPartition orgPartition = Cache.Org.getPartition('local.GoogleCloudClient');
 
 GoogleCredential readCredentials = new GoogleAuthorizationCodeFlow.Builder()

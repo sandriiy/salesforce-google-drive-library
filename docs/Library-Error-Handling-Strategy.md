@@ -4,7 +4,7 @@ The Salesforce Apex Google Drive library is designed to fail **loudly and transp
 
 To handle errors gracefully (and prevent system details from reaching end users), wrap your calls in a `try/catch` block.
 
-```
+```java
 try {
     return this.remoteGoogleDrive.files().multipartCreate()
         .setFileName(fileName)
@@ -37,7 +37,7 @@ This makes it easier to identify *which* request failed and *why*, especially wh
 
 If you want to centralize logging or diagnostics, you can also configure a **failure strategy**. The library provides the `GoogleFailureStrategy` interface, which you implement in your org and pass when creating a `GoogleDrive` instance.
 
-```
+```java
 GoogleDrive drive = new GoogleDrive(googleDriveCredentials, DEFAULT_AGENT_NAME)
     .withFailureStrategy(YOUR_ERROR_HANDLER);
 ```
@@ -51,7 +51,7 @@ Important notes:
 - If you don’t want technical details surfaced to end users, you should still use `try/catch` around your application logic.
 
 Below is an example of how a failure strategy might be implemented.
-```
+```java
 public with sharing class GoogleFileWebErrorHandler implements GoogleFailureStrategy {
     public void onFailure(GoogleCloudException ex) {
         Logger.error('Google Client for Salesforce / Google Drive API Exception: ' + ex.getMessage());
